@@ -30,7 +30,7 @@ func InitDB() {
 		revel.ERROR.Fatalf("Connection to database error: %s", err)
 		return
 	}
-	dbgorm.Db.LogMode(true)
+	//dbgorm.Db.LogMode(true)
 
 	dbgorm.Db.AutoMigrate(&models.RepoType{}, &models.Repo{}, &models.User{},
 		&models.Owner{}, &models.Package{}, &models.BuildedPackage{}, &models.Log{})

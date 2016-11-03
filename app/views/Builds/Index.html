@@ -15,6 +15,8 @@
               <th>Completion time</th>
               <th>Owner</th>
               <th>Tag name</th>
+              <th>Push</th>
+              <th>Cancel</th>
 			</tr>
 			{{ range $index, $build := .builds }}
 			<tr>
@@ -26,6 +28,8 @@
                 <td>{{ $build.CompletionTime.Format "2006-01-02 15:04:05 -0700 MST" }}</td>
                 <td>{{ $build.Owner.OwnerName }}</td>
                 <td>{{ $build.TagName }}</td>
+                <td><a href="/push/{{ $build.BuildID }}">Push</a></td>
+                <td><a href="/cancel/{{ $build.BuildID }}">Cancel</a></td>
 			</tr>
 			{{ end }}
 		  </table>

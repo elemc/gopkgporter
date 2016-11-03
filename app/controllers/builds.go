@@ -17,10 +17,9 @@ func (c Builds) Index() revel.Result {
 
 	for _, build := range rbuilds {
 		dbgorm.Db.Model(&build).Related(&build.BuildPackage, "BuildPackage")
-		dbgorm.Db.Model(&build).Related(&build.Owner)
+		dbgorm.Db.Model(&build).Related(&build.Owner, "Owner")
 		dbgorm.Db.Model(&build).Related(&build.User, "PushUser")
 		dbgorm.Db.Model(&build).Related(&build.PushRepoType, "PushRepoType")
-		revel.INFO.Printf("%+v", build.BuildPackage)
 		builds = append(builds, build)
 	}
 
