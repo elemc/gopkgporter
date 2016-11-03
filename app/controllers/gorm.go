@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/base64"
+	"gopkgporter/app/common"
 	"gopkgporter/app/models"
 
 	"golang.org/x/crypto/bcrypt"
@@ -23,18 +24,14 @@ var (
 
 func InitDB() {
 
-	var found bool
-	if dbgorm.Driver, found = revel.Config.String("db.driver"); !found {
-		revel.ERROR.Fatal("No db.driver found.")
-	}
-	if dbgorm.Spec, found = revel.Config.String("db.spec"); !found {
-		revel.ERROR.Fatal("No db.spec found.")
-	}
 	var err error
-	dbgorm.Db, err = gorm.Open(dbgorm.Driver, dbgorm.Spec)
+	dbgorm.Db, err = common.GetGORM()
 	if err != nil {
-		revel.ERROR.Fatalf("Failed database open: %s", err)
+		revel.ERROR.Fatalf("Connection to database error: %s", err)
+		return
 	}
+	dbgorm.Db.LogMode(true)
+	dbgorm.Db.Model(&models.Log{}).Related(&models.User{}, "User")
 
 	dbgorm.Db.AutoMigrate(&models.RepoType{}, &models.Repo{}, &models.User{},
 		&models.Owner{}, &models.Package{}, &models.BuildedPackage{}, &models.Log{})

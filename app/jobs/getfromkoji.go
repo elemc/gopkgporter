@@ -3,6 +3,7 @@ package jobs
 import (
 	"database/sql"
 	"fmt"
+	"gopkgporter/app/common"
 	"gopkgporter/app/models"
 	"time"
 
@@ -45,8 +46,8 @@ func (c GetFromKoji) Run() {
 func getKojiBuilds() (builds []KojiBuild, err error) {
 	queryStr := `SELECT id, pkg_id, version, release, epoch, create_event,
                         completion_time, state, task_id, owner
-                 FROM build
-                 WHERE state='1'`
+                     FROM build
+                     WHERE state='1'`
 
 	rows, err := koji.Query(queryStr)
 	if err != nil {
@@ -71,22 +72,8 @@ func getKojiBuilds() (builds []KojiBuild, err error) {
 
 func getBuilds() (err error) {
 	// GORM database
-	var (
-		found  bool
-		driver string
-		spec   string
-	)
-	if driver, found = revel.Config.String("db.driver"); !found {
-		revel.ERROR.Printf("No db.driver found.")
-		return
-	}
-	if spec, found = revel.Config.String("db.spec"); !found {
-		revel.ERROR.Printf("No db.spec found.")
-		return
-	}
-	dbgorm, err = gorm.Open(driver, spec)
+	dbgorm, err = common.GetGORM()
 	if err != nil {
-		revel.ERROR.Printf("Failed database open: %s", err)
 		return
 	}
 	defer dbgorm.Close()
@@ -109,12 +96,9 @@ func getBuilds() (err error) {
 		//revel.INFO.Printf("Get builded package with ID=%d", build.ID)
 		d := dbgorm.First(&buildedPackage, build.ID)
 		if err := d.Error; err != nil {
-			//revel.INFO.Printf("Get builded package with ID=%d fail. Create it.", build.ID)
 			buildedPackage.BuildID = build.ID
 			buildedPackage.Owner = getOwner(build.OwnerID)
-			buildedPackage.OwnerID = buildedPackage.Owner.ID
 			buildedPackage.BuildPackage = getPackage(build.PkgID, buildedPackage.Owner)
-			buildedPackage.BuildPackageID = buildedPackage.BuildPackage.ID
 			buildedPackage.Version = build.Version
 			buildedPackage.Release = build.Release
 			buildedPackage.Epoch = build.Epoch.String
@@ -122,7 +106,7 @@ func getBuilds() (err error) {
 			buildedPackage.TaskID = uint(build.TaskID.Int64)
 			buildedPackage.TagName = getTagNameForBuild(build.ID)
 			buildedPackage.Pushed = false
-
+			dbgorm.LogMode(true)
 			dbgorm.Create(&buildedPackage)
 		}
 	}

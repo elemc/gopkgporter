@@ -1,13 +1,28 @@
 {{set . "title" "Home"}}
 {{template "header.html" .}}
 
-<header class="jumbotron" style="background-color:#A9F16C">
+<header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
   <div class="container">
     <div class="row">
-        {{ range $index, $build := .builds }}
-            <p>{{ $build.UserName }}</p>
-            <p>{{ $build.UserEMail }}</p>
-        {{ end }}
+        <table width="100%">
+			<caption>Operations</caption>
+			<tr>
+			  <th>Build</th>
+			  <th>User</th>
+              <th>Operation time</th>
+			  <th>Type</th>
+			  <th>Description</th>
+			</tr>
+			{{ range $index, $log := .newLogs }}
+			<tr id='operationLog{{ $log.Type }}'>
+                <td>{{ $log.Package.PkgName }}</td>
+                <td>{{ $log.User.UserName }}</td>
+                <td>{{ $log.Timestamp.Format "2006-01-02 15:04:05 -0700 MST" }}</td>
+                <td>{{ $log.Type }}</td>
+                <td>{{ $log.Action }}</td>
+			</tr>
+			{{ end }}
+		  </table>
     </div>
   </div>
 </header>

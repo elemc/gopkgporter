@@ -1,6 +1,7 @@
 package models
 
 import (
+	"gopkgporter/app/common"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -27,4 +28,51 @@ type BuildedPackage struct {
 	PushRepoTypeID uint
 	BlockedToPush  bool   `gorm:"column:is_blocked_to_push"`
 	TagName        string `gorm:"column:tag_name;size:25"`
+	User           User   `gorm:"-"`
+}
+
+func (bp *BuildedPackage) BeforeCreate() (err error) {
+	log := Log{
+		Timestamp: time.Now(),
+		Package:   bp.BuildPackage,
+		Action:    "automatically generated after build",
+		User:      bp.User,
+		Type:      "builded",
+	}
+	dbgorm, err := common.GetGORM()
+	if err != nil {
+		return
+	}
+	//defer dbgorm.Close()
+	createLog := dbgorm.Create(&log)
+	err = createLog.Error
+	return
+}
+
+func (bp *BuildedPackage) BeforeUpdate() (err error) {
+	t := ""
+	action := ""
+	if bp.Pushed {
+		action = "pushed to repository"
+		t = "pushed"
+	} else {
+		action = "remove from pool to push"
+		t = "canceled"
+	}
+
+	log := Log{
+		Timestamp: time.Now(),
+		Package:   bp.BuildPackage,
+		Action:    action,
+		User:      bp.User,
+		Type:      t,
+	}
+	dbgorm, err := common.GetGORM()
+	if err != nil {
+		return
+	}
+	//defer dbgorm.Close()
+
+	err = dbgorm.Create(&log).Error
+	return
 }

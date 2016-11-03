@@ -9,7 +9,10 @@ import (
 type Log struct {
 	gorm.Model
 	Timestamp time.Time `gorm:"column:timestamp"`
-	Package   Package   `gorm:"column:package"`
-	Action    string    `gorm:"column:action;size:25"`
-	User      User      `gorm:"column:user"`
+	Package   Package
+	PackageID int
+	Action    string `gorm:"column:action;size:100"`
+	User      User
+	UserID    int
+	Type      string `gorm:"column:type;size:10"`
 }
