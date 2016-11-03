@@ -19,7 +19,7 @@ func (c App) Index() revel.Result {
 	//dbgorm.Db.Find(&users)
 
 	var logs []models.Log
-	logsQuery := dbgorm.Db.Find(&logs).Limit(25)
+	logsQuery := dbgorm.Db.Order("Timestamp DESC", true).Find(&logs).Limit(25)
 	err := logsQuery.Error
 	if err != nil {
 		return c.RenderError(err)

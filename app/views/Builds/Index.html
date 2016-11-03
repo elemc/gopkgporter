@@ -1,0 +1,44 @@
+{{set . "title" "Home"}}
+{{template "header.html" .}}
+
+<header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
+  <div class="container">
+    <div class="row">
+        <table width="100%">
+			<caption>Operations</caption>
+			<tr>
+			  <th>ID</th>
+			  <th>Package</th>
+              <th>Version</th>
+              <th>Release</th>
+              <th>Epoch</th>
+              <th>Completion time</th>
+              <th>Owner</th>
+              <th>Tag name</th>
+			</tr>
+			{{ range $index, $build := .builds }}
+			<tr>
+                <td>{{ $build.BuildID }}</td>
+                <td>{{ $build.BuildPackage.PkgName }}</td>
+                <td>{{ $build.Version }}</td>
+                <td>{{ $build.Release }}</td>
+                <td>{{ $build.Epoch }}</td>
+                <td>{{ $build.CompletionTime.Format "2006-01-02 15:04:05 -0700 MST" }}</td>
+                <td>{{ $build.Owner.OwnerName }}</td>
+                <td>{{ $build.TagName }}</td>
+			</tr>
+			{{ end }}
+		  </table>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="row">
+    <div class="span6">
+      {{template "flash.html" .}}
+    </div>
+  </div>
+</div>
+
+{{template "footer.html" .}}

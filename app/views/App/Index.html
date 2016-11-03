@@ -15,8 +15,8 @@
 			</tr>
 			{{ range $index, $log := .newLogs }}
 			<tr id='operationLog{{ $log.Type }}'>
-                <td>{{ $log.Package.PkgName }}</td>
-                <td>{{ $log.User.UserName }}</td>
+                <td><a href="/packages/{{ $log.PackageID }}/">{{ $log.Package.PkgName }}</a></td>
+                <td><a href="/users/{{ $log.UserID }}/">{{ $log.User.UserName }}</a></td>
                 <td>{{ $log.Timestamp.Format "2006-01-02 15:04:05 -0700 MST" }}</td>
                 <td>{{ $log.Type }}</td>
                 <td>{{ $log.Action }}</td>

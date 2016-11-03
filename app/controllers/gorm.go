@@ -31,7 +31,6 @@ func InitDB() {
 		return
 	}
 	dbgorm.Db.LogMode(true)
-	dbgorm.Db.Model(&models.Log{}).Related(&models.User{}, "User")
 
 	dbgorm.Db.AutoMigrate(&models.RepoType{}, &models.Repo{}, &models.User{},
 		&models.Owner{}, &models.Package{}, &models.BuildedPackage{}, &models.Log{})
