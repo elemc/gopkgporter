@@ -17,7 +17,7 @@
 			{{ range $index, $pkg := .newPkgs }}
 			<tr>
                 <form action="/packages/{{ $pkg.ID }}" method="POST">
-                    <td>{{ $pkg.PkgName }}</td>
+                    <td><a href="/packages/{{ $pkg.ID }}/">{{ $pkg.PkgName }}</a></td>
                     <td>
                         <select name="OwnerID">
                             {{ range $index, $owner := $ownerList }}

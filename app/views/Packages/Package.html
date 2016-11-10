@@ -1,0 +1,71 @@
+{{set . "title" "Package .pkg.PkgName" }}
+{{template "header.html" .}}
+
+{{ $pkg := .pkg }}
+
+<header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
+  <div class="container">
+    <div class="row">
+        <form action="/packages/{{ $pkg.ID }}" method="POST">
+        <table width="100%">
+			<caption>Package</caption>
+			<tr>
+			  <th>Name</th>
+              <th>Value</th>
+			</tr>
+            <tr>
+                <td>ID</td>
+                <td>{{ .pkg.ID }}</td>
+            </tr>
+
+            <tr>
+                <td>Name:</td>
+                <td><input type="text" size="40" value="{{ .pkg.PkgName }}"/></td>
+            </tr>
+            <tr>
+                <td>Owner:</td>
+                <td>
+                    <select name="OwnerID">
+                        {{ range $index, $owner := .ownerList }}
+                            {{ if eq $owner.ID $pkg.PkgOwner.ID }}
+                                <option selected value="{{ $owner.ID }}">{{ $owner.OwnerName }}</option>
+                            {{ else }}
+                                <option value="{{ $owner.ID }}">{{ $owner.OwnerName }}</option>
+                            {{ end }}
+                        {{ end }}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td>Repo:</td>
+                <td>
+                    <select name="RepoID">
+                        {{ range $index, $repo := .repos }}
+                            {{ if eq $repo.ID $pkg.PkgRepo.ID }}
+                                <option selected value="{{ $repo.ID }}">{{ $repo.RepoName }}</option>
+                            {{ else }}
+                                <option value="{{ $repo.ID }}">{{ $repo.RepoName }}</option>
+                            {{ end }}
+                        {{ end }}
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td><input type="submit" value="Save"/></td>
+                <td></td>
+            </tr>
+		  </table>
+        </form>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="row">
+    <div class="span6">
+      {{template "flash.html" .}}
+    </div>
+  </div>
+</div>
+
+{{template "footer.html" .}}

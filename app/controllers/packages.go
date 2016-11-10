@@ -78,3 +78,29 @@ func (c Packages) Edit(id int) revel.Result {
 
 	return c.Redirect("/packages")
 }
+
+func (c Packages) Package(id int) revel.Result {
+	var pkg models.Package
+	q := dbgorm.Db.Find(&pkg, id)
+	if q.Error != nil {
+		return c.RenderError(q.Error)
+	}
+
+	dbgorm.Db.Model(&pkg).Related(&pkg.PkgOwner, "PkgOwner")
+	dbgorm.Db.Model(&pkg).Related(&pkg.PkgRepo, "PkgRepo")
+
+	var ownerList []models.Owner
+
+	q = dbgorm.Db.Order("owner_name ASC", true).Find(&ownerList)
+	if q.Error != nil {
+		return c.RenderError(q.Error)
+	}
+
+	var repos []models.Repo
+	q = dbgorm.Db.Order("repo_name ASC", true).Find(&repos)
+	if q.Error != nil {
+		return c.RenderError(q.Error)
+	}
+
+	return c.Render(pkg, ownerList, repos)
+}

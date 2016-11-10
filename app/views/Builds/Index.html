@@ -21,7 +21,7 @@
 			{{ range $index, $build := .builds }}
 			<tr>
                 <td>{{ $build.BuildID }}</td>
-                <td>{{ $build.BuildPackage.PkgName }}</td>
+                <td><a href="/packages/{{ $build.BuildPackage.ID }}/">{{ $build.BuildPackage.PkgName }}</a></td>
                 <td>{{ $build.Version }}</td>
                 <td>{{ $build.Release }}</td>
                 <td>{{ $build.Epoch }}</td>
