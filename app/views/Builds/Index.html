@@ -28,7 +28,13 @@
                 <td>{{ $build.CompletionTime.Format "2006-01-02 15:04:05 -0700 MST" }}</td>
                 <td>{{ $build.Owner.OwnerName }}</td>
                 <td>{{ $build.TagName }}</td>
-                <td><a href="/push/{{ $build.BuildID }}">Push</a></td>
+                <td>
+                    {{ if lt $build.BuildPackage.PkgRepoID 2 }}
+                        <a href="/packages/{{ $build.BuildPackage.ID }}">Change repository</a>
+                    {{ else }}
+                        <a href="/push/{{ $build.BuildID }}">Push</a>
+                    {{ end }}
+                </td>
                 <td><a href="/cancel/{{ $build.BuildID }}">Cancel</a></td>
 			</tr>
 			{{ end }}

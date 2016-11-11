@@ -166,11 +166,17 @@ func getPackageOwnerAndTagID(id uint) (repo models.Repo) {
 }
 
 func getPackage(pkgID uint, owner models.Owner) (pkg models.Package) {
+	var unknownRepo models.Repo
+	q := dbgorm.First(&unknownRepo, 1)
+	if q.Error != nil {
+		return
+	}
 	d := dbgorm.First(&pkg, pkgID)
 	if err := d.Error; err != nil {
 		pkg.ID = pkgID
 		pkg.PkgName = getPackageName(pkgID)
 		pkg.PkgOwner = owner
+		pkg.PkgRepo = unknownRepo
 		dbgorm.Create(&pkg)
 	}
 

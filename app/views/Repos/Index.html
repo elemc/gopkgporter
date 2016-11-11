@@ -1,0 +1,73 @@
+{{set . "title" "Repositories"}}
+{{template "header.html" .}}
+
+<header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
+  <div class="container">
+    <div class="row">
+        <table width="100%">
+			<caption>Operations</caption>
+			<tr>
+			  <th>ID</th>
+			  <th>Name</th>
+              <th>Edit</th>
+              <th>Delete</th>
+			</tr>
+			{{ range $index, $repo := .repos }}
+			<tr>
+                <form action="/repos/{{ $repo.ID }}" method="POST">
+                    <td>{{ $repo.ID }}</td>
+                    <td>
+                        {{ if ne $repo.ID 1 }}
+                            <input type="text" size="40" name="RepoName" value="{{ $repo.RepoName }}"/>
+                        {{ else }}
+                            {{ $repo.RepoName }}
+                        {{ end }}
+                    </td>
+                    <td>
+                        {{ if ne $repo.ID 1 }}
+                            <input type="hidden" name="RepoID" value="{{ $repo.ID }}"/>
+                            <input type="submit" value="Save"/>
+                        </form>
+                        {{ end }}
+                    </td>
+                </form>
+                <td>
+                    {{ if ne $repo.ID 1 }}
+                    <form action="/repos/{{ $repo.ID }}/delete" method="POST">
+                        <input type="hidden" name="id" value="{{ $repo.ID }}"/>
+                        <input type="submit" value="Delete"/>
+                    </form>
+                    {{ end }}
+                </td>
+			</tr>
+            {{ end }}
+            <tr>
+                <td><hr/></td>
+                <td><hr/></td>
+                <td><hr/></td>
+            </tr>
+            <tr>
+                <td><strong>Create new repository</strong></td>
+                <td/><td/>
+            </tr>
+            <tr>
+                <form action="/repos" method="POST">
+                    <td>Name</td>
+                    <td><input type="text" size="40" name="RepoName"/></td>
+                    <td><input type="submit" value="Insert"/></td>
+                </form>
+            </tr>
+		  </table>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="row">
+    <div class="span6">
+      {{template "flash.html" .}}
+    </div>
+  </div>
+</div>
+
+{{template "footer.html" .}}

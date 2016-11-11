@@ -11,6 +11,11 @@ GET     /builds/:id                             Builds.Get
 GET     /packages                               Packages.Index
 POST    /packages/:id                           Packages.Edit
 GET     /packages/:id                           Packages.Package
+GET     /repos                                  Repos.Index
+POST    /repos                                  Repos.Insert
+POST    /repos/:id/delete                       Repos.Delete
+POST    /repos/:id                              Repos.Edit
+DELETE  /repos/:id                              Repos.Delete
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

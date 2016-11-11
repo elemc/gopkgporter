@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"fmt"
 	"gopkgporter/app/models"
 	"strconv"
 
@@ -102,5 +103,7 @@ func (c Packages) Package(id int) revel.Result {
 		return c.RenderError(q.Error)
 	}
 
-	return c.Render(pkg, ownerList, repos)
+	titleName := fmt.Sprintf("Package \"%s\"", pkg.PkgName)
+
+	return c.Render(pkg, ownerList, repos, titleName)
 }
