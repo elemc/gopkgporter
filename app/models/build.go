@@ -60,13 +60,14 @@ func (bp *BuildedPackage) BeforeUpdate() (err error) {
 		t = "canceled"
 	}
 
-	log := Log{
-		Timestamp: time.Now(),
-		Package:   bp.BuildPackage,
-		Action:    action,
-		User:      bp.User,
-		Type:      t,
-	}
+	log := Log{}
+	log.Timestamp = time.Now()
+	log.Package = bp.BuildPackage
+	log.PackageID = bp.BuildPackage.ID
+	log.Action = action
+	log.User = bp.User
+	log.Type = t
+
 	dbgorm, err := common.GetGORM()
 	if err != nil {
 		return
