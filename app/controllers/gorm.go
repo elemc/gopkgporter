@@ -35,6 +35,12 @@ func InitDB() {
 	dbgorm.Db.AutoMigrate(&models.RepoType{}, &models.Repo{}, &models.User{},
 		&models.Owner{}, &models.Package{}, &models.BuildedPackage{}, &models.Log{})
 
+	initUsers()
+	initRepos()
+	initRepoTypes()
+}
+
+func initUsers() {
 	var users []models.User
 	dbgorm.Db.Find(&users)
 	if len(users) == 0 {
@@ -47,7 +53,9 @@ func InitDB() {
 
 		dbgorm.Db.Create(user)
 	}
+}
 
+func initRepos() {
 	var repos []models.Repo
 	dbgorm.Db.Find(&repos)
 	if len(repos) == 0 {
@@ -55,5 +63,23 @@ func InitDB() {
 		repo.ID = 0
 		repo.RepoName = "unknown"
 		dbgorm.Db.Create(repo)
+	}
+}
+
+func initRepoTypes() {
+	var repoTypes []models.RepoType
+	dbgorm.Db.Find(&repoTypes)
+	if len(repoTypes) == 0 {
+		repoType := new(models.RepoType)
+		repoType.RTName = "releases"
+		dbgorm.Db.Create(repoType)
+
+		repoType = new(models.RepoType)
+		repoType.RTName = "updates-testing"
+		dbgorm.Db.Create(repoType)
+
+		repoType = new(models.RepoType)
+		repoType.RTName = "updates"
+		dbgorm.Db.Create(repoType)
 	}
 }
