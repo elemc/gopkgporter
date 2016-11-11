@@ -51,7 +51,10 @@
                 </td>
             </tr>
             <tr>
-                <td><input type="submit" value="Save"/></td>
+                <td>
+                    <input type="hidden" name="return_page" value="{{ .returnPage }}"/>
+                    <input type="submit" value="Save"/>
+                </td>
                 <td></td>
             </tr>
 		  </table>

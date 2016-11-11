@@ -84,7 +84,13 @@ func (c Packages) Edit(id int) revel.Result {
 	}
 	c.Flash.Success("Package \"%s\" successfully saved.", pkg.PkgName)
 
-	return c.Redirect("/packages")
+	returnPage := "/packages"
+	rPage := c.Params.Get("return_page")
+	if rPage != "" {
+		returnPage = rPage
+	}
+
+	return c.Redirect(returnPage)
 }
 
 // Package function returns page with one specified package with id
@@ -113,5 +119,11 @@ func (c Packages) Package(id int) revel.Result {
 
 	titleName := fmt.Sprintf("Package \"%s\"", pkg.PkgName)
 
-	return c.Render(pkg, ownerList, repos, titleName)
+	returnPage := "/packages"
+	rPage := c.Params.Get("return_page")
+	if rPage != "" {
+		returnPage = rPage
+	}
+
+	return c.Render(pkg, ownerList, repos, titleName, returnPage)
 }

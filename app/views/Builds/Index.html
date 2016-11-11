@@ -21,7 +21,7 @@
 			{{ range $index, $build := .builds }}
 			<tr>
                 <td>{{ $build.BuildID }}</td>
-                <td><a href="/packages/{{ $build.BuildPackage.ID }}/">{{ $build.BuildPackage.PkgName }}</a></td>
+                <td><a href="/packages/{{ $build.BuildPackage.ID }}/?return_page=/builds">{{ $build.BuildPackage.PkgName }}</a></td>
                 <td>{{ $build.Version }}</td>
                 <td>{{ $build.Release }}</td>
                 <td>{{ $build.Epoch }}</td>
@@ -30,12 +30,12 @@
                 <td>{{ $build.TagName }}</td>
                 <td>
                     {{ if lt $build.BuildPackage.PkgRepoID 2 }}
-                        <a href="/packages/{{ $build.BuildPackage.ID }}">Change repository</a>
+                        <a href="/packages/{{ $build.BuildPackage.ID }}?return_page=/builds">Change repository</a>
                     {{ else }}
                         <a href="/push/{{ $build.BuildID }}">Push</a>
                     {{ end }}
                 </td>
-                <td><a href="/cancel/{{ $build.BuildID }}">Cancel</a></td>
+                <td><a href="/builds/cancel/{{ $build.BuildID }}">Cancel</a></td>
 			</tr>
 			{{ end }}
 		  </table>
