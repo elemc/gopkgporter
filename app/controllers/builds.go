@@ -13,7 +13,7 @@ type Builds struct {
 func (c Builds) Index() revel.Result {
 	var rbuilds []models.BuildedPackage
 	var builds []models.BuildedPackage
-	dbgorm.Db.Find(&rbuilds, "pushed='false'")
+	dbgorm.Db.Order("build_id DESC", true).Find(&rbuilds, "pushed='false'")
 
 	for _, build := range rbuilds {
 		dbgorm.Db.Model(&build).Related(&build.BuildPackage, "BuildPackage")
