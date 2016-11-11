@@ -57,7 +57,7 @@ func (c Packages) Edit(id int) revel.Result {
 		oid, err := strconv.Atoi(ownerID)
 		var owner models.Owner
 		if err == nil {
-			q := dbgorm.Db.Find(&owner, oid)
+			q = dbgorm.Db.Find(&owner, oid)
 			if q.Error != nil {
 				return c.RenderError(q.Error)
 			}
@@ -70,7 +70,7 @@ func (c Packages) Edit(id int) revel.Result {
 		oid, err := strconv.Atoi(repoID)
 		var repo models.Repo
 		if err == nil {
-			q := dbgorm.Db.Find(&repo, oid)
+			q = dbgorm.Db.Find(&repo, oid)
 			if q.Error != nil {
 				return c.RenderError(q.Error)
 			}
@@ -78,7 +78,11 @@ func (c Packages) Edit(id int) revel.Result {
 		}
 	}
 
-	dbgorm.Db.Save(&pkg)
+	q = dbgorm.Db.Save(&pkg)
+	if q.Error != nil {
+		return c.RenderError(q.Error)
+	}
+	c.Flash.Success("Package \"%s\" successfully saved.", pkg.PkgName)
 
 	return c.Redirect("/packages")
 }
