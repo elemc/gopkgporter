@@ -8,10 +8,12 @@ import (
 	"github.com/revel/revel"
 )
 
+// Packages controller
 type Packages struct {
 	*revel.Controller
 }
 
+// Index function returns list packages
 func (c Packages) Index() revel.Result {
 	var pkgs []models.Package
 	q := dbgorm.Db.Order("pkg_name ASC", true).Find(&pkgs)
@@ -42,6 +44,7 @@ func (c Packages) Index() revel.Result {
 	return c.Render(newPkgs, ownerList, repos)
 }
 
+// Edit function edit owner or repository for specified package
 func (c Packages) Edit(id int) revel.Result {
 	var pkg models.Package
 	q := dbgorm.Db.Find(&pkg, id)
@@ -80,6 +83,7 @@ func (c Packages) Edit(id int) revel.Result {
 	return c.Redirect("/packages")
 }
 
+// Package function returns page with one specified package with id
 func (c Packages) Package(id int) revel.Result {
 	var pkg models.Package
 	q := dbgorm.Db.Find(&pkg, id)

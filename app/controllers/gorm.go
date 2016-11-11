@@ -8,10 +8,13 @@ import (
 	"golang.org/x/crypto/bcrypt"
 
 	"github.com/jinzhu/gorm"
-	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"github.com/revel/revel"
+
+	// PgSQL adapter for GORM
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 )
 
+// Db struct for store database connection and details about it
 type Db struct {
 	Db     *gorm.DB
 	Driver string
@@ -22,6 +25,7 @@ var (
 	dbgorm Db
 )
 
+// InitDB function create database
 func InitDB() {
 
 	var err error

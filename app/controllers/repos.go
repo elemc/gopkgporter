@@ -7,10 +7,12 @@ import (
 	"github.com/revel/revel"
 )
 
+// Repos controller
 type Repos struct {
 	*revel.Controller
 }
 
+// Index returns list repositories
 func (c Repos) Index() revel.Result {
 	var repos []models.Repo
 	q := dbgorm.Db.Order("repo_name ASC", true).Find(&repos)
@@ -21,6 +23,7 @@ func (c Repos) Index() revel.Result {
 	return c.Render(repos)
 }
 
+// Delete function soft delete repository with specified id
 func (c Repos) Delete(id int) revel.Result {
 	var repo models.Repo
 	q := dbgorm.Db.Find(&repo, id)
@@ -36,6 +39,7 @@ func (c Repos) Delete(id int) revel.Result {
 	return c.Redirect("/repos")
 }
 
+// Insert function create new repository
 func (c Repos) Insert() revel.Result {
 	repoName := c.Params.Get("RepoName")
 	if repoName == "" {
@@ -52,6 +56,7 @@ func (c Repos) Insert() revel.Result {
 	return c.Redirect("/repos")
 }
 
+// Edit function save new repository name
 func (c Repos) Edit(id int) revel.Result {
 	repoName := c.Params.Get("RepoName")
 	if repoName == "" {

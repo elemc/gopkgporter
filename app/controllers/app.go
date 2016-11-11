@@ -10,10 +10,12 @@ const (
 	timeFormat = "2006-01-02 15:04:05 -0700 MST"
 )
 
+// App is a root struct for web application
 type App struct {
 	*revel.Controller
 }
 
+// Index function returns log list
 func (c App) Index() revel.Result {
 	//var users []models.User
 	//dbgorm.Db.Find(&users)
