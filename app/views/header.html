@@ -26,7 +26,7 @@
               <li id="reposTab"><a href="/repos/">Repositories</a></li>
               <li id="adminTab"><a href="/admin/">Administration</a></li>
               {{ if user_is_auth .session }}
-              <li id="logoutTab"><a href="/logout">Logout</a></li>
+              <li id="logoutTab"><a href="/logout">Logout: {{ auth_user_name .session }}</a></li>
               {{ else }}
               <li id="loginTab"><a href="/login">Login</a></li>
               {{ end }}

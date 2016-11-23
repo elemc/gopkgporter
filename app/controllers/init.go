@@ -13,4 +13,10 @@ func init() {
 		_, ok := s["user"]
 		return ok
 	}
+	revel.TemplateFuncs["auth_user_name"] = func(s revel.Session) string {
+		if username, ok := s["user"]; ok {
+			return username
+		}
+		return ""
+	}
 }
