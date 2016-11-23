@@ -14,17 +14,22 @@ type Repos struct {
 
 // Index returns list repositories
 func (c Repos) Index() revel.Result {
+	currentUser := connected(c.RenderArgs, c.Session)
 	var repos []models.Repo
 	q := dbgorm.Db.Order("repo_name ASC", true).Find(&repos)
 	if q.Error != nil {
 		return c.RenderError(q.Error)
 	}
 
-	return c.Render(repos)
+	return c.Render(repos, currentUser)
 }
 
 // Delete function soft delete repository with specified id
 func (c Repos) Delete(id int) revel.Result {
+	currentUser := connected(c.RenderArgs, c.Session)
+	if currentUser == nil || currentUser.UserGroup < models.GroupAdmin {
+		return c.RenderError(fmt.Errorf(dontPerm))
+	}
 	var repo models.Repo
 	q := dbgorm.Db.Find(&repo, id)
 	if q.Error != nil {
@@ -41,9 +46,14 @@ func (c Repos) Delete(id int) revel.Result {
 
 // Insert function create new repository
 func (c Repos) Insert() revel.Result {
+	currentUser := connected(c.RenderArgs, c.Session)
+	if currentUser == nil || currentUser.UserGroup < models.GroupAdmin {
+		return c.RenderError(fmt.Errorf(dontPerm))
+	}
+
 	repoName := c.Params.Get("RepoName")
 	if repoName == "" {
-		return c.RenderError(fmt.Errorf("Missing parameter \"Repository name\" or it was empty."))
+		return c.RenderError(fmt.Errorf("Missing parameter \"Repository name\" or it was empty.\n"))
 	}
 
 	repo := models.Repo{RepoName: repoName}
@@ -58,6 +68,11 @@ func (c Repos) Insert() revel.Result {
 
 // Edit function save new repository name
 func (c Repos) Edit(id int) revel.Result {
+	currentUser := connected(c.RenderArgs, c.Session)
+	if currentUser == nil || currentUser.UserGroup < models.GroupAdmin {
+		return c.RenderError(fmt.Errorf(dontPerm))
+	}
+
 	repoName := c.Params.Get("RepoName")
 	if repoName == "" {
 		return c.RenderError(fmt.Errorf("Missing parameter \"Repository name\" or it was empty."))

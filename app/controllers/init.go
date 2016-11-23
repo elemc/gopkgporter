@@ -6,6 +6,10 @@ import (
 	"github.com/revel/revel"
 )
 
+const (
+	dontPerm = "You don't have permissions for update this package!"
+)
+
 func init() {
 	revel.OnAppStart(InitDB)
 	// revel.InterceptMethod((*GorpController).Begin, revel.BEFORE)

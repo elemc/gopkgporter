@@ -55,15 +55,13 @@ func (c Packages) Edit(id int) revel.Result {
 		c.RenderError(q.Error)
 	}
 
-	dontPerm := fmt.Errorf("You don't have permissions for update this package!\n")
-
 	if currentUser == nil {
-		c.RenderError(dontPerm)
+		return c.RenderError(fmt.Errorf(dontPerm))
 	} else if currentUser.UserGroup < models.GroupPusher {
 		var owner models.Owner
 		ctx := dbgorm.Db.First(&owner, "owner_name=?", currentUser.UserName)
 		if ctx.Error != nil || owner.ID != pkg.PkgOwnerID {
-			return c.RenderError(dontPerm)
+			return c.RenderError(fmt.Errorf(dontPerm))
 		}
 	}
 
