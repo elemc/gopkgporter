@@ -1,11 +1,8 @@
 package controllers
 
 import (
-	"encoding/base64"
 	"gopkgporter/app/common"
 	"gopkgporter/app/models"
-
-	"golang.org/x/crypto/bcrypt"
 
 	"github.com/jinzhu/gorm"
 	"github.com/revel/revel"
@@ -50,10 +47,8 @@ func initUsers() {
 	if len(users) == 0 {
 		user := new(models.User)
 		user.UserName = "admin"
-		user.UserEMail = "admin@example.com"
-
-		bcryptPass, _ := bcrypt.GenerateFromPassword([]byte("admin"), bcrypt.DefaultCost)
-		user.UserHashPwd = base64.URLEncoding.EncodeToString(bcryptPass)
+		user.SetPasswordHash(user.GeneratePasswordHash("admin"))
+		user.UserGroup = models.GroupAdmin
 
 		dbgorm.Db.Create(user)
 	}

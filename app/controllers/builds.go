@@ -43,10 +43,18 @@ func (c Builds) CancelBuild(id int) revel.Result {
 		return c.RenderError(q.Error)
 	}
 
+	currentUser := connected(c.RenderArgs, c.Session)
+
 	for _, build := range builds {
+		dbgorm.Db.Model(&build).Related(&build.BuildPackage, "BuildPackage")
+		dbgorm.Db.Model(&build).Related(&build.Owner, "Owner")
+		dbgorm.Db.Model(&build).Related(&build.User, "PushUser")
+		dbgorm.Db.Model(&build).Related(&build.PushRepoType, "PushRepoType")
+
 		build.BlockedToPush = true
 		build.PushTime = time.Now()
-		dbgorm.Db.Find(&build.User, 1)
+
+		dbgorm.Db.Find(&build.User, currentUser.ID)
 
 		q = dbgorm.Db.Save(&build)
 		if q.Error != nil {

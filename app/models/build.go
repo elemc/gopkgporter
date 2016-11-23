@@ -35,10 +35,12 @@ func (bp *BuildedPackage) BeforeCreate() (err error) {
 	log := Log{
 		Timestamp: time.Now(),
 		Package:   bp.BuildPackage,
+		PackageID: bp.BuildPackage.ID,
 		Action:    "automatically generated after build",
 		User:      bp.User,
 		UserID:    bp.User.ID,
 		Type:      "builded",
+		Tag:       bp.TagName,
 	}
 	dbgorm, err := common.GetGORM()
 	if err != nil {
@@ -69,6 +71,7 @@ func (bp *BuildedPackage) BeforeUpdate() (err error) {
 	log.User = bp.User
 	log.UserID = bp.User.ID
 	log.Type = t
+	log.Tag = bp.TagName
 
 	dbgorm, err := common.GetGORM()
 	if err != nil {

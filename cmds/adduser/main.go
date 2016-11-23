@@ -8,8 +8,6 @@ import (
 	"github.com/jinzhu/gorm"
 	"github.com/revel/revel"
 
-	"golang.org/x/crypto/bcrypt"
-
 	_ "github.com/lib/pq"
 )
 
@@ -28,10 +26,7 @@ func main() {
 
 	user := models.User{}
 	user.UserName = username
-	hash, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-	if err != nil {
-		log.Fatalf("Error in generate bcrypt hash from password.")
-	}
+	hash := user.GeneratePasswordHash(password)
 	user.SetPasswordHash(hash)
 
 	ctx := db.Create(&user)

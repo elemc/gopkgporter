@@ -11,6 +11,7 @@ type Log struct {
 	gorm.Model
 	Timestamp time.Time `gorm:"column:timestamp"`
 	Package   Package
+	Tag       string `gorm:"column:tag"`
 	PackageID uint
 	Action    string `gorm:"column:action;size:100"`
 	User      User

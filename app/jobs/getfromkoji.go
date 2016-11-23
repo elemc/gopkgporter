@@ -94,7 +94,7 @@ func getBuilds() (err error) {
 	for _, build := range builds {
 		buildedPackage := models.BuildedPackage{}
 		//revel.INFO.Printf("Get builded package with ID=%d", build.ID)
-		d := dbgorm.First(&buildedPackage, build.ID)
+		d := dbgorm.First(&buildedPackage, "build_id=?", build.ID)
 		if err := d.Error; err != nil {
 			buildedPackage.BuildID = build.ID
 			buildedPackage.Owner = getOwner(build.OwnerID)
