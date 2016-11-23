@@ -21,8 +21,8 @@ type BuildedPackage struct {
 	OwnerID        uint
 	Pushed         bool `gorm:"column:pushed"`
 	WaitToTime     bool `gorm:"column:wait_to_time"`
-	PushUser       User `gorm:"column:push_user"`
-	PushUserID     uint
+	PushUser       User
+	PushUserID     uint      `gorm:"column:push_user_id"`
 	PushTime       time.Time `gorm:"column:push_time"`
 	PushRepoType   RepoType  `gorm:"column:push_repo_type"`
 	PushRepoTypeID uint
@@ -37,6 +37,7 @@ func (bp *BuildedPackage) BeforeCreate() (err error) {
 		Package:   bp.BuildPackage,
 		Action:    "automatically generated after build",
 		User:      bp.User,
+		UserID:    bp.User.ID,
 		Type:      "builded",
 	}
 	dbgorm, err := common.GetGORM()
@@ -66,6 +67,7 @@ func (bp *BuildedPackage) BeforeUpdate() (err error) {
 	log.PackageID = bp.BuildPackage.ID
 	log.Action = action
 	log.User = bp.User
+	log.UserID = bp.User.ID
 	log.Type = t
 
 	dbgorm, err := common.GetGORM()

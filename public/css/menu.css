@@ -35,3 +35,26 @@
 #mainNav ul li:hover {
     border-color: Black;
 }
+
+/** Login **/
+
+#login {
+    text-align: center;
+}
+
+#formLogin {
+    border-bottom: 1px dashed #aaa;
+    width: 300px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#formLogin label {
+    text-align: right;
+}
+
+#formLogin p.buttons {
+    text-align: center;
+    background: none;
+    margin-top: 0;
+}

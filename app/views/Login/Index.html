@@ -1,0 +1,36 @@
+{{set . "title" "Login"}}
+{{template "header.html" .}}
+
+<header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
+  <div class="container">
+    <div class="login">
+        <form action="{{url "Login.Login"}}" id="formLogin" method="POST">
+            <p class="field">
+                <label>Login name:</label>
+                <input type="text" name="username" size="19" value="{{.flash.username}}" />
+            </p>
+            <p class="field">
+                <label>Password:</label>
+                <input type="password" name="password" size="19"/>
+            </p>
+            <p class="field">
+                <label>Remember:</label>
+                <input type="checkbox" name="remember" value="true"/>
+            </p>
+            <p class="buttons">
+                <input type="submit" value="Login"/>
+            </p>
+        </form>
+    </div>
+  </div>
+</header>
+
+<div class="container">
+  <div class="row">
+    <div class="span6">
+      {{template "flash.html" .}}
+    </div>
+  </div>
+</div>
+
+{{template "footer.html" .}}

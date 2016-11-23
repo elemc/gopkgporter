@@ -46,7 +46,7 @@ func (c Builds) CancelBuild(id int) revel.Result {
 	for _, build := range builds {
 		build.BlockedToPush = true
 		build.PushTime = time.Now()
-		build.PushUserID = 1
+		dbgorm.Db.Find(&build.User, 1)
 
 		q = dbgorm.Db.Save(&build)
 		if q.Error != nil {

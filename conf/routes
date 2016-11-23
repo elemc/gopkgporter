@@ -17,6 +17,9 @@ POST    /repos                                  Repos.Insert
 POST    /repos/:id/delete                       Repos.Delete
 POST    /repos/:id                              Repos.Edit
 DELETE  /repos/:id                              Repos.Delete
+GET     /login                                  Login.Index
+POST    /login                                  Login.Login
+GET     /logout                                 Login.Logout
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

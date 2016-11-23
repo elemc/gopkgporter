@@ -14,6 +14,6 @@ type Log struct {
 	PackageID uint
 	Action    string `gorm:"column:action;size:100"`
 	User      User
-	UserID    uint
+	UserID    uint   `gorm:"column:user_id"`
 	Type      string `gorm:"column:type;size:10"`
 }

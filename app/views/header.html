@@ -1,5 +1,5 @@
+{{ $user := .user }}
 <!DOCTYPE html>
-
 <html>
   <head>
     <title>{{.title}}</title>
@@ -25,5 +25,10 @@
               <li id="packagesTab"><a href="/packages/">Packages</a></li>
               <li id="reposTab"><a href="/repos/">Repositories</a></li>
               <li id="adminTab"><a href="/admin/">Administration</a></li>
+              {{ if user_is_auth .session }}
+              <li id="logoutTab"><a href="/logout">Logout</a></li>
+              {{ else }}
+              <li id="loginTab"><a href="/login">Login</a></li>
+              {{ end }}
           </ul>
       </div>

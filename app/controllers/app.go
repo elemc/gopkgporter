@@ -17,9 +17,6 @@ type App struct {
 
 // Index function returns log list
 func (c App) Index() revel.Result {
-	//var users []models.User
-	//dbgorm.Db.Find(&users)
-
 	var logs []models.Log
 	logsQuery := dbgorm.Db.Order("Timestamp DESC", true).Find(&logs).Limit(25)
 	err := logsQuery.Error
@@ -35,4 +32,29 @@ func (c App) Index() revel.Result {
 	}
 	// show logs
 	return c.Render(newLogs, timeFormat)
+}
+
+func connected(args map[string]interface{}, session revel.Session) *models.User {
+	if args["user"] != nil {
+		return args["user"].(*models.User)
+	}
+	if username, ok := session["user"]; ok {
+		return getUser(username)
+	}
+	return nil
+}
+
+func getUser(username string) *models.User {
+	var users []models.User
+	ctx := dbgorm.Db.Find(&users, "user_name=?", username)
+	if ctx.Error != nil {
+		revel.ERROR.Printf("Error in getUser: %s", ctx.Error)
+		return nil
+	}
+	if len(users) == 0 {
+		revel.WARN.Printf("User with username %s not found in database", username)
+		return nil
+	}
+
+	return &users[0]
 }
