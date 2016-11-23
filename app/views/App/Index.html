@@ -1,6 +1,9 @@
 {{set . "title" "Home"}}
 {{template "header.html" .}}
 
+
+{{$currentUser := .currentUser}}
+
 <header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
   <div class="container">
     <div class="row">
@@ -16,9 +19,17 @@
 			</tr>
 			{{ range $index, $log := .newLogs }}
 			<tr id='operationLog{{ $log.Type }}'>
-                <td><a href="/packages/{{ $log.PackageID }}/">{{ $log.Package.PkgName }}</a></td>
+                {{ if user_is_nil $currentUser }}
+                    <td>{{ $log.Package.PkgName }}</td>
+                {{ else }}
+                    <td><a href="/packages/{{ $log.PackageID }}/">{{ $log.Package.PkgName }}</a></td>
+                {{ end }}
                 <td>{{ $log.Tag }}</td>
-                <td><a href="/users/{{ $log.UserID }}/">{{ $log.User.UserName }}</a></td>
+                {{ if user_is_admin $currentUser }}
+                    <td><a href="/users/{{ $log.UserID }}/">{{ $log.User.UserName }}</a></td>
+                {{ else }}
+                    <td>{{ $log.User.UserName }}</td>
+                {{ end }}
                 <td>{{ $log.Timestamp.Format "2006-01-02 15:04:05 -0700 MST" }}</td>
                 <td>{{ $log.Type }}</td>
                 <td>{{ $log.Action }}</td>

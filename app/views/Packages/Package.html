@@ -1,6 +1,7 @@
 {{set . "title" .titleName }}
 {{template "header.html" .}}
 
+{{ $currentUser := .currentUser }}
 {{ $pkg := .pkg }}
 
 <header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
@@ -20,11 +21,12 @@
 
             <tr>
                 <td>Name:</td>
-                <td><input type="text" size="40" name="PkgName" value="{{ .pkg.PkgName }}"/></td>
+                <td>{{ .pkg.PkgName }}</td>
             </tr>
             <tr>
                 <td>Owner:</td>
                 <td>
+                    {{ if user_is_pusher $currentUser }}
                     <select name="OwnerID">
                         {{ range $index, $owner := .ownerList }}
                             {{ if eq $owner.ID $pkg.PkgOwner.ID }}
@@ -34,11 +36,17 @@
                             {{ end }}
                         {{ end }}
                     </select>
+                    {{ else }}
+                    {{ $pkg.PkgOwner.ID }}
+                    {{ end }}
                 </td>
             </tr>
             <tr>
                 <td>Repo:</td>
                 <td>
+                    {{ if user_is_nil $currentUser }}
+                    {{ $pkg.PkgRepo.RepoName }}
+                    {{ else }}
                     <select name="RepoID">
                         {{ range $index, $repo := .repos }}
                             {{ if eq $repo.ID $pkg.PkgRepo.ID }}
@@ -48,12 +56,16 @@
                             {{ end }}
                         {{ end }}
                     </select>
+                    {{ end }}
                 </td>
             </tr>
             <tr>
                 <td>
                     <input type="hidden" name="return_page" value="{{ .returnPage }}"/>
+                    {{ if user_is_nil $currentUser }}
+                    {{ else }}
                     <input type="submit" value="Save"/>
+                    {{ end }}
                 </td>
                 <td></td>
             </tr>

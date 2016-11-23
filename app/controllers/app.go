@@ -30,8 +30,11 @@ func (c App) Index() revel.Result {
 		dbgorm.Db.Model(&log).Related(&log.Package)
 		newLogs = append(newLogs, log)
 	}
+
+	currentUser := connected(c.RenderArgs, c.Session)
+
 	// show logs
-	return c.Render(newLogs, timeFormat)
+	return c.Render(newLogs, timeFormat, currentUser)
 }
 
 func connected(args map[string]interface{}, session revel.Session) *models.User {

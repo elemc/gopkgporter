@@ -1,6 +1,10 @@
 package controllers
 
-import "github.com/revel/revel"
+import (
+	"gopkgporter/app/models"
+
+	"github.com/revel/revel"
+)
 
 func init() {
 	revel.OnAppStart(InitDB)
@@ -18,5 +22,20 @@ func init() {
 			return username
 		}
 		return ""
+	}
+	revel.TemplateFuncs["user_is_nil"] = func(user *models.User) bool {
+		return user == nil
+	}
+	revel.TemplateFuncs["user_is_admin"] = func(user *models.User) bool {
+		if user == nil {
+			return false
+		}
+		return user.UserGroup == models.GroupAdmin
+	}
+	revel.TemplateFuncs["user_is_pusher"] = func(user *models.User) bool {
+		if user == nil {
+			return false
+		}
+		return (user.UserGroup == models.GroupAdmin) || (user.UserGroup == models.GroupPusher)
 	}
 }

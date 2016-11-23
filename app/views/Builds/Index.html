@@ -1,6 +1,8 @@
 {{set . "title" "Builds"}}
 {{template "header.html" .}}
 
+{{ $currentUser := .currentUser }}
+
 <header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
   <div class="container">
     <div class="row">
@@ -15,19 +17,28 @@
               <th>Completion time</th>
               <th>Owner</th>
               <th>Tag name</th>
-              <th>Push</th>
-              <th>Cancel</th>
+              {{ if user_is_nil $currentUser }}
+              {{ else }}
+                  <th>Push</th>
+                  <th>Cancel</th>
+              {{ end }}
 			</tr>
 			{{ range $index, $build := .builds }}
 			<tr>
                 <td>{{ $build.BuildID }}</td>
-                <td><a href="/packages/{{ $build.BuildPackage.ID }}/?return_page=/builds">{{ $build.BuildPackage.PkgName }}</a></td>
+                {{ if user_is_nil $currentUser }}
+                    <td>{{ $build.BuildPackage.PkgName }}</td>
+                {{ else }}
+                    <td><a href="/packages/{{ $build.BuildPackage.ID }}/?return_page=/builds">{{ $build.BuildPackage.PkgName }}</a></td>
+                {{ end }}
                 <td>{{ $build.Version }}</td>
                 <td>{{ $build.Release }}</td>
                 <td>{{ $build.Epoch }}</td>
                 <td>{{ $build.CompletionTime.Format "2006-01-02 15:04:05 -0700 MST" }}</td>
                 <td>{{ $build.Owner.OwnerName }}</td>
                 <td>{{ $build.TagName }}</td>
+                {{ if user_is_nil $currentUser }}
+                {{ else }}
                 <td>
                     {{ if lt $build.BuildPackage.PkgRepoID 2 }}
                         <a href="/packages/{{ $build.BuildPackage.ID }}?return_page=/builds">Change repository</a>
@@ -36,6 +47,7 @@
                     {{ end }}
                 </td>
                 <td><a href="/builds/cancel/{{ $build.BuildID }}">Cancel</a></td>
+                {{ end }}
 			</tr>
 			{{ end }}
 		  </table>

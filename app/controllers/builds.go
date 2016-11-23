@@ -17,7 +17,23 @@ type Builds struct {
 func (c Builds) Index() revel.Result {
 	var rbuilds []models.BuildedPackage
 	var builds []models.BuildedPackage
-	dbgorm.Db.Order("build_id DESC", true).Find(&rbuilds, "pushed='false' AND is_blocked_to_push='false'")
+
+	where := "pushed='false' AND is_blocked_to_push='false'"
+
+	currentUser := connected(c.RenderArgs, c.Session)
+	if currentUser != nil {
+		if currentUser.UserGroup < models.GroupPusher {
+			var owner models.Owner
+			ctx := dbgorm.Db.First(&owner, "owner_name=?", currentUser.UserName)
+			if ctx.Error == nil {
+				where = fmt.Sprintf("%s AND owner_id='%d'", where, owner.ID)
+			} else {
+				where = fmt.Sprintf("%s AND owner_id=-1", where)
+				c.Flash.Error("Not found owner with name: %s", currentUser.UserName)
+			}
+		}
+	}
+	dbgorm.Db.Order("build_id DESC", true).Find(&rbuilds, where)
 
 	for _, build := range rbuilds {
 		dbgorm.Db.Model(&build).Related(&build.BuildPackage, "BuildPackage")
@@ -27,7 +43,7 @@ func (c Builds) Index() revel.Result {
 		builds = append(builds, build)
 	}
 
-	return c.Render(builds)
+	return c.Render(builds, currentUser)
 }
 
 // Get function returns build information

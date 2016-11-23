@@ -1,6 +1,8 @@
 {{set . "title" "Packages"}}
 {{template "header.html" .}}
 
+{{ $currentUser := .currentUser }}
+
 <header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
   <div class="container">
     <div class="row">
@@ -10,7 +12,10 @@
 			  <th>Name</th>
               <th>Owner</th>
 			  <th>Repo</th>
+              {{ if user_is_nil $currentUser }}
+              {{ else }}
               <th>Edit</th>
+              {{ end }}
 			</tr>
             {{ $ownerList := .ownerList }}
             {{ $repos := .repos }}
@@ -18,29 +23,47 @@
 			<tr>
                 <form action="/packages/{{ $pkg.ID }}" method="POST">
                     <td><a href="/packages/{{ $pkg.ID }}/">{{ $pkg.PkgName }}</a></td>
+
                     <td>
-                        <select name="OwnerID">
-                            {{ range $index, $owner := $ownerList }}
+                        {{ if user_is_pusher $currentUser }}
+                            <select name="OwnerID">
+                                {{ range $index, $owner := $ownerList }}
                                 {{ if eq $owner.ID $pkg.PkgOwner.ID }}
-                                    <option selected value="{{ $owner.ID }}">{{ $owner.OwnerName }}</option>
+                                <option selected value="{{ $owner.ID }}">{{ $owner.OwnerName }}</option>
                                 {{ else }}
-                                    <option value="{{ $owner.ID }}">{{ $owner.OwnerName }}</option>
+                                <option value="{{ $owner.ID }}">{{ $owner.OwnerName }}</option>
                                 {{ end }}
-                            {{ end }}
-                        </select>
+                                {{ end }}
+                            </select>
+                        {{ else }}
+                            {{ $pkg.PkgOwner.OwnerName }}
+                        {{ end }}
                     </td>
                     <td>
-                        <select name="RepoID">
-                            {{ range $index, $repo := $repos }}
-                                {{ if eq $repo.ID $pkg.PkgRepo.ID }}
-                                    <option selected value="{{ $repo.ID }}">{{ $repo.RepoName }}</option>
-                                {{ else }}
-                                    <option value="{{ $repo.ID }}">{{ $repo.RepoName }}</option>
-                                {{ end }}
+                        {{ if user_is_nil $currentUser }}
+                            {{ $pkg.PkgRepo.RepoName }}
+                        {{ else }}
+                            {{ if or (and (eq $currentUser.UserGroup 0) (eq $pkg.PkgOwner.OwnerName $currentUser.UserName)) (user_is_pusher $currentUser) }}
+                                <select name="RepoID">
+                                    {{ range $index, $repo := $repos }}
+                                        {{ if eq $repo.ID $pkg.PkgRepo.ID }}
+                                            <option selected value="{{ $repo.ID }}">{{ $repo.RepoName }}</option>
+                                        {{ else }}
+                                            <option value="{{ $repo.ID }}">{{ $repo.RepoName }}</option>
+                                        {{ end }}
+                                    {{ end }}
+                                </select>
+                            {{ else }}
+                                {{ $pkg.PkgRepo.RepoName }}
                             {{ end }}
-                        </select>
+                        {{ end }}
                     </td>
-                    <td align="center"><input type="submit" value="Edit"/></td>
+                    {{ if user_is_nil $currentUser }}
+                    {{ else }}
+                        {{ if or (and (eq $currentUser.UserGroup 0) (eq $pkg.PkgOwner.OwnerName $currentUser.UserName)) (user_is_pusher $currentUser) }}
+                            <td align="center"><input type="submit" value="Edit"/></td>
+                        {{ end }}
+                    {{ end }}
                 </form>
 			</tr>
 			{{ end }}

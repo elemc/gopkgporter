@@ -15,6 +15,8 @@ type Packages struct {
 
 // Index function returns list packages
 func (c Packages) Index() revel.Result {
+	currentUser := connected(c.RenderArgs, c.Session)
+
 	var pkgs []models.Package
 	q := dbgorm.Db.Order("pkg_name ASC", true).Find(&pkgs)
 	if q.Error != nil {
@@ -41,15 +43,28 @@ func (c Packages) Index() revel.Result {
 		return c.RenderError(q.Error)
 	}
 
-	return c.Render(newPkgs, ownerList, repos)
+	return c.Render(newPkgs, ownerList, repos, currentUser)
 }
 
 // Edit function edit owner or repository for specified package
 func (c Packages) Edit(id int) revel.Result {
+	currentUser := connected(c.RenderArgs, c.Session)
 	var pkg models.Package
 	q := dbgorm.Db.Find(&pkg, id)
 	if q.Error != nil {
 		c.RenderError(q.Error)
+	}
+
+	dontPerm := fmt.Errorf("You don't have permissions for update this package!\n")
+
+	if currentUser == nil {
+		c.RenderError(dontPerm)
+	} else if currentUser.UserGroup < models.GroupPusher {
+		var owner models.Owner
+		ctx := dbgorm.Db.First(&owner, "owner_name=?", currentUser.UserName)
+		if ctx.Error != nil || owner.ID != pkg.PkgOwnerID {
+			return c.RenderError(dontPerm)
+		}
 	}
 
 	ownerID := c.Params.Get("OwnerID")
@@ -95,6 +110,7 @@ func (c Packages) Edit(id int) revel.Result {
 
 // Package function returns page with one specified package with id
 func (c Packages) Package(id int) revel.Result {
+	currentUser := connected(c.RenderArgs, c.Session)
 	var pkg models.Package
 	q := dbgorm.Db.Find(&pkg, id)
 	if q.Error != nil {
@@ -125,5 +141,5 @@ func (c Packages) Package(id int) revel.Result {
 		returnPage = rPage
 	}
 
-	return c.Render(pkg, ownerList, repos, titleName, returnPage)
+	return c.Render(pkg, ownerList, repos, titleName, returnPage, currentUser)
 }
