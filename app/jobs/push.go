@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"gopkgporter/app/common"
 	"gopkgporter/app/models"
+	"io/ioutil"
+	"os"
 	"os/exec"
+	"path/filepath"
 	"strings"
 
 	"github.com/revel/modules/jobs/app/jobs"
@@ -30,16 +33,31 @@ func (c PushPackages) Run() {
 		revel.ERROR.Printf("Error in JOB PushPackages fetch packages: %s", err)
 		return
 	}
+	if len(pkgs) == 0 {
+		return
+	}
 
 	script := revel.Config.StringDefault("porter.push_script", "./koji-pp")
 	revel.INFO.Printf("Porter use script from [%s]", script)
 
+	dists := make(map[string]int)
 	for _, pkg := range pkgs {
-		// buildID := fmt.Sprintf("--id %d", pkg.BuildID)
-		// ver := fmt.Sprintf("--ver %s", pkg.Version)
-		// repo := fmt.Sprintf("--repo %s", pkg.Repository)
-		// branch := fmt.Sprintf("--branch %s", pkg.Branch)
-		// dist := fmt.Sprintf("--dist %s", pkg.Distributive)
+		val, ok := dists[pkg.Distributive]
+		if !ok {
+			val = 0
+		}
+		dists[pkg.Distributive] = val + 1
+	}
+
+	for k := range dists {
+		err = c.createDotFile(".startpush", k)
+		if err != nil {
+			revel.ERROR.Printf("Error in creating start dotfile: %s", err)
+			return
+		}
+	}
+
+	for _, pkg := range pkgs {
 		var argList []string
 		argList = append(argList, fmt.Sprintf("--id %d", pkg.BuildID))
 		argList = append(argList, fmt.Sprintf("--ver %s", pkg.Version))
@@ -50,7 +68,8 @@ func (c PushPackages) Run() {
 		cmd := exec.Command(script, strings.Join(argList, " "))
 
 		revel.INFO.Printf("Command: %s", strings.Join(cmd.Args, " "))
-		data, err := cmd.CombinedOutput()
+		var data []byte
+		data, err = cmd.CombinedOutput()
 		if err != nil {
 			revel.ERROR.Printf("Error start command script: %s", err)
 			revel.INFO.Printf("Command output: [%s]", data)
@@ -64,10 +83,42 @@ func (c PushPackages) Run() {
 			continue
 		}
 	}
+
+	for k := range dists {
+		err = c.createDotFile(".endpush", k)
+		if err != nil {
+			revel.ERROR.Printf("Error in creating start dotfile: %s", err)
+			return
+		}
+	}
+	if err != nil {
+		revel.ERROR.Printf("Error in creating end dotfile: %s", err)
+		return
+	}
 }
 
 func init() {
 	revel.OnAppStart(func() {
 		jobs.Schedule("@every 1m", PushPackages{})
 	})
+}
+
+func (c *PushPackages) createDotFile(filename string, dist string) (err error) {
+	tempDir, err := ioutil.TempDir("", "gopkgporter")
+	if err != nil {
+		return err
+	}
+
+	fn := filepath.Join(tempDir, filename)
+	f, err := os.OpenFile(fn, os.O_CREATE|os.O_WRONLY, 0644)
+	f.Close()
+
+	cmd := exec.Command("rsync", "-av4", fn, fmt.Sprintf("koji.tigro.info::%s", dist))
+	data, err := cmd.CombinedOutput()
+	if err != nil {
+		revel.WARN.Printf("Output command [%s]: %s", strings.Join(cmd.Args, " "), data)
+		return err
+	}
+
+	return
 }
