@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"testesia/app/routes"
+	"gopkgporter/app/routes"
 
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
