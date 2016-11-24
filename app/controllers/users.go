@@ -10,7 +10,7 @@ type Users struct {
 	*revel.Controller
 }
 
-func (c *Users) Index() revel.Result {
+func (c Users) Index() revel.Result {
 	currentUser := connected(c.RenderArgs, c.Session)
 	if currentUser == nil || currentUser.UserGroup < models.GroupAdmin {
 		return c.Render(currentUser)
@@ -25,7 +25,7 @@ func (c *Users) Index() revel.Result {
 	return c.Render(users, currentUser)
 }
 
-func (c *Users) Edit(id uint) revel.Result {
+func (c Users) Edit(id uint) revel.Result {
 	currentUser := connected(c.RenderArgs, c.Session)
 	// if currentUser == nil || (currentUser.UserGroup < models.GroupAdmin && currentUser.ID != id) {
 	// 	return c.Render(currentUser)
@@ -36,7 +36,7 @@ func (c *Users) Edit(id uint) revel.Result {
 	return c.Render(user, currentUser)
 }
 
-func (c *Users) Save(id uint, username, password, email string, group int) revel.Result {
+func (c Users) Save(id uint, username, password, email string, group int) revel.Result {
 	currentUser := connected(c.RenderArgs, c.Session)
 	if currentUser == nil {
 		c.Flash.Error(dontPerm)
@@ -71,7 +71,7 @@ func (c *Users) Save(id uint, username, password, email string, group int) revel
 	return c.Redirect("/users")
 }
 
-func (c *Users) Delete(id uint) revel.Result {
+func (c Users) Delete(id uint) revel.Result {
 	currentUser := connected(c.RenderArgs, c.Session)
 	if currentUser == nil || currentUser.UserGroup < models.GroupAdmin {
 		c.Flash.Error(dontPerm)

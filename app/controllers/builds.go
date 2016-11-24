@@ -43,7 +43,10 @@ func (c Builds) Index() revel.Result {
 		builds = append(builds, build)
 	}
 
-	return c.Render(builds, currentUser)
+	var branches []models.RepoType
+	dbgorm.Db.Order("rt_name ASC", true).Find(&branches)
+
+	return c.Render(builds, currentUser, branches)
 }
 
 // Get function returns build information
@@ -76,6 +79,69 @@ func (c Builds) CancelBuild(id int) revel.Result {
 		if q.Error != nil {
 			return c.RenderError(q.Error)
 		}
+	}
+
+	return c.Redirect("/builds")
+}
+
+func (c Builds) Push(id uint, branch string) revel.Result {
+	if branch == "" {
+		branch = "updates"
+	}
+	currentUser := connected(c.RenderArgs, c.Session)
+	if currentUser == nil {
+		c.Flash.Error(dontPerm)
+		return c.Redirect("/builds")
+	}
+	var build models.BuildedPackage
+
+	revel.INFO.Printf("Build ID: %d", id)
+	revel.INFO.Printf("Branch name: %s", branch)
+	ctx := dbgorm.Db.First(&build, "build_id=?", id)
+	if ctx.Error != nil {
+		c.Flash.Error("Error in fetch build by id: %s", ctx.Error)
+		return c.Redirect("/builds")
+	}
+
+	dbgorm.Db.Model(&build).Related(&build.BuildPackage, "BuildPackage")
+	dbgorm.Db.Model(&build.BuildPackage).Related(&build.BuildPackage.PkgRepo, "PkgRepo")
+	dbgorm.Db.Model(&build).Related(&build.Owner, "Owner")
+	dbgorm.Db.Model(&build).Related(&build.User, "PushUser")
+	dbgorm.Db.Model(&build).Related(&build.PushRepoType, "PushRepoType")
+
+	if (build.Owner.OwnerName != currentUser.UserName) && (currentUser.UserGroup < models.GroupPusher) {
+		c.Flash.Error(dontPerm)
+		return c.Redirect("/builds")
+	}
+
+	var branchRT models.RepoType
+	ctx = dbgorm.Db.First(&branchRT, "rt_name=?", branch)
+	if ctx.Error != nil {
+		revel.ERROR.Printf("Error fetch branch by name: %s", ctx.Error)
+		c.Flash.Error(ctx.Error.Error())
+		return c.Redirect("/builds")
+	}
+
+	push := models.PackagesToPush{}
+	push.Fill(build, branch)
+	ctx = dbgorm.Db.Create(&push)
+	if ctx.Error != nil {
+		revel.ERROR.Printf("Error in create push: %s", ctx.Error)
+		c.Flash.Error(ctx.Error.Error())
+		return c.Redirect("/builds")
+	}
+
+	build.Pushed = true
+	build.PushUser = *currentUser
+	build.PushUserID = currentUser.ID
+	build.PushRepoType = branchRT
+	build.PushRepoTypeID = branchRT.ID
+	build.User = *currentUser
+	ctx = dbgorm.Db.Save(&build)
+	if ctx.Error != nil {
+		revel.ERROR.Printf("Error in save build package: %s", ctx.Error)
+		c.Flash.Error(ctx.Error.Error())
+		return c.Redirect("/builds")
 	}
 
 	return c.Redirect("/builds")

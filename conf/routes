@@ -9,6 +9,7 @@ GET     /                                       App.Index
 GET     /builds                                 Builds.Index
 GET     /builds/cancel/:id                      Builds.CancelBuild
 GET     /builds/:id                             Builds.Get
+GET     /push/:id                               Builds.Push
 GET     /packages                               Packages.Index
 POST    /packages/:id                           Packages.Edit
 GET     /packages/:id                           Packages.Package

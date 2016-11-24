@@ -2,6 +2,7 @@
 {{template "header.html" .}}
 
 {{ $currentUser := .currentUser }}
+{{ $branches := .branches }}
 
 <header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
   <div class="container">
@@ -24,7 +25,7 @@
               {{ end }}
 			</tr>
 			{{ range $index, $build := .builds }}
-			<tr>
+			<tr style="border: 1px solid #000;">
                 <td>{{ $build.BuildID }}</td>
                 {{ if user_is_nil $currentUser }}
                     <td>{{ $build.BuildPackage.PkgName }}</td>
@@ -43,7 +44,13 @@
                     {{ if lt $build.BuildPackage.PkgRepoID 2 }}
                         <a href="/packages/{{ $build.BuildPackage.ID }}?return_page=/builds">Change repository</a>
                     {{ else }}
-                        <a href="/push/{{ $build.BuildID }}">Push</a>
+                        {{ if user_is_pusher $currentUser }}
+                        {{ range $ib, $branch := $branches }}
+                            <a href="/push/{{ $build.BuildID }}?branch={{ $branch.RTName }}">Push to <strong>{{ $branch.RTName }}</strong></a><br/>
+                        {{ end }}
+                        {{ else }}
+                        <a href="/push/{{ $build.BuildID }}">Push to <strong>updates</strong></a>
+                        {{ end }}
                     {{ end }}
                 </td>
                 <td><a href="/builds/cancel/{{ $build.BuildID }}">Cancel</a></td>
