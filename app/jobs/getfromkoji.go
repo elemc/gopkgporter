@@ -80,7 +80,7 @@ func getBuilds() (err error) {
 	defer dbgorm.Close()
 
 	// KOJI database
-	koji, err = sql.Open("postgres", "user=alex dbname=koji sslmode=disable")
+	koji, err = sql.Open("postgres", "user=koji dbname=koji sslmode=disable")
 	if err != nil {
 		revel.ERROR.Printf("Error connetction to koji database: %s", err)
 		return
