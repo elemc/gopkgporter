@@ -42,8 +42,9 @@ func (c PushPackages) Run() {
 		dist := fmt.Sprintf("--dist %s", pkg.Distributive)
 
 		cmd := exec.Command(script, buildID, ver, repo, branch, dist)
-		revel.INFO.Printf("Command: %s %s", script, strings.Join(cmd.Args, " "))
-		err := cmd.Run()
+		revel.INFO.Printf("Command:%s", script, strings.Join(cmd.Args, " "))
+		data, err := cmd.Output()
+		revel.INFO.Printf("Command output: [%s]", data)
 		if err != nil {
 			revel.ERROR.Printf("Error start command script: %s", err)
 			continue
