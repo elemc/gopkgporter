@@ -51,9 +51,9 @@ func (c PushPackages) Run() {
 
 		revel.INFO.Printf("Command: %s", strings.Join(cmd.Args, " "))
 		data, err := cmd.CombinedOutput()
-		revel.INFO.Printf("Command output: [%s]", data)
 		if err != nil {
 			revel.ERROR.Printf("Error start command script: %s", err)
+			revel.INFO.Printf("Command output: [%s]", data)
 			continue
 		}
 
