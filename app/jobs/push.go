@@ -5,6 +5,7 @@ import (
 	"gopkgporter/app/common"
 	"gopkgporter/app/models"
 	"os/exec"
+	"strings"
 
 	"github.com/revel/modules/jobs/app/jobs"
 	"github.com/revel/revel"
@@ -41,6 +42,7 @@ func (c PushPackages) Run() {
 		dist := fmt.Sprintf("--dist %s", pkg.Distributive)
 
 		cmd := exec.Command(script, buildID, ver, repo, branch, dist)
+		revel.INFO.Printf("Command: %s %s", script, strings.Join(cmd.Args, " "))
 		err := cmd.Run()
 		if err != nil {
 			revel.ERROR.Printf("Error start command script: %s", err)
