@@ -22,6 +22,14 @@ func (t *JobsTest) TestGetFromKoji() {
 	t.AssertContentType("text/html; charset=utf-8")
 }
 
+func (t *JobsTest) TestPushPackages() {
+	push := jobs.PushPackages{}
+	push.Run()
+	t.Get("/")
+	t.AssertOk()
+	t.AssertContentType("text/html; charset=utf-8")
+}
+
 func (t *JobsTest) After() {
 	println("Tear down")
 }
