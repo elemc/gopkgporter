@@ -35,13 +35,19 @@ func (c PushPackages) Run() {
 	revel.INFO.Printf("Porter use script from [%s]", script)
 
 	for _, pkg := range pkgs {
-		buildID := fmt.Sprintf("--id %d", pkg.BuildID)
-		ver := fmt.Sprintf("--ver %s", pkg.Version)
-		repo := fmt.Sprintf("--repo %s", pkg.Repository)
-		branch := fmt.Sprintf("--branch %s", pkg.Branch)
-		dist := fmt.Sprintf("--dist %s", pkg.Distributive)
+		// buildID := fmt.Sprintf("--id %d", pkg.BuildID)
+		// ver := fmt.Sprintf("--ver %s", pkg.Version)
+		// repo := fmt.Sprintf("--repo %s", pkg.Repository)
+		// branch := fmt.Sprintf("--branch %s", pkg.Branch)
+		// dist := fmt.Sprintf("--dist %s", pkg.Distributive)
+		var argList []string
+		argList = append(argList, fmt.Sprintf("--id %d", pkg.BuildID))
+		argList = append(argList, fmt.Sprintf("--ver %s", pkg.Version))
+		argList = append(argList, fmt.Sprintf("--repo %s", pkg.Repository))
+		argList = append(argList, fmt.Sprintf("--branch %s", pkg.Branch))
+		argList = append(argList, fmt.Sprintf("--dist %s", pkg.Distributive))
 
-		cmd := exec.Command(script, buildID, ver, repo, branch, dist)
+		cmd := exec.Command(script, argList...)
 
 		revel.INFO.Printf("Command: %s", strings.Join(cmd.Args, " "))
 		data, err := cmd.CombinedOutput()
