@@ -25,6 +25,8 @@ func GetGORM() (dbgorm *gorm.DB, err error) {
 		revel.ERROR.Printf("Failed database open: %s", err)
 		return
 	}
+	dbgorm.DB().SetMaxOpenConns(5)
+	dbgorm.DB().SetMaxIdleConns(-1)
 
 	return
 }

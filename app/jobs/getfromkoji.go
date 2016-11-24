@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"gopkgporter/app/common"
 	"gopkgporter/app/models"
+	"log"
 	"time"
 
 	"github.com/jinzhu/gorm"
@@ -84,6 +85,8 @@ func getBuilds() (err error) {
 		revel.ERROR.Printf("Error connetction to koji database: %s", err)
 		return
 	}
+	koji.SetMaxIdleConns(-1)
+	koji.SetMaxOpenConns(5)
 	defer koji.Close()
 
 	builds, err := getKojiBuilds()
@@ -92,22 +95,62 @@ func getBuilds() (err error) {
 	}
 
 	for _, build := range builds {
-		buildedPackage := models.BuildedPackage{}
-		//revel.INFO.Printf("Get builded package with ID=%d", build.ID)
-		d := dbgorm.First(&buildedPackage, "build_id=?", build.ID)
-		if err := d.Error; err != nil {
-			buildedPackage.BuildID = build.ID
-			buildedPackage.Owner = getOwner(build.OwnerID)
-			buildedPackage.BuildPackage = getPackage(build.PkgID, buildedPackage.Owner)
-			buildedPackage.Version = build.Version
-			buildedPackage.Release = build.Release
-			buildedPackage.Epoch = build.Epoch.String
-			buildedPackage.CompletionTime = build.CompletionTime
-			buildedPackage.TaskID = uint(build.TaskID.Int64)
-			buildedPackage.TagName = getTagNameForBuild(build.ID)
-			buildedPackage.Pushed = false
-			dbgorm.LogMode(true)
-			dbgorm.Create(&buildedPackage)
+		if isLiveMedia(build) {
+			continue
+		}
+		err = createNewBuildPackage(build)
+		if err != nil {
+			log.Printf("Error in create new build package: %s", err)
+		}
+	}
+	return
+}
+
+func isLiveMedia(build KojiBuild) (result bool) {
+	queryStr := fmt.Sprintf("SELECT method FROM task WHERE id=%d", build.TaskID.Int64)
+
+	rows, err := koji.Query(queryStr)
+	if err != nil {
+		revel.ERROR.Printf("Error in query [%s]: %s", queryStr, err)
+		return
+	}
+	defer rows.Close()
+
+	for rows.Next() {
+		var method string
+		err = rows.Scan(&method)
+		if err != nil {
+			revel.ERROR.Printf("Error in fetching information: %s", err)
+			continue
+		}
+		if method == "livemedia" {
+			result = true
+		}
+	}
+	return
+}
+
+func createNewBuildPackage(build KojiBuild) (err error) {
+	buildedPackage := models.BuildedPackage{}
+	d := dbgorm.First(&buildedPackage, "build_id=?", build.ID)
+	if err = d.Error; err != nil {
+		buildedPackage.BuildID = build.ID
+		buildedPackage.Owner = getOwner(build.OwnerID)
+		buildedPackage.BuildPackage = getPackage(build.PkgID, buildedPackage.Owner)
+		buildedPackage.Version = build.Version
+		buildedPackage.Release = build.Release
+		buildedPackage.Epoch = build.Epoch.String
+		buildedPackage.CompletionTime = build.CompletionTime
+		buildedPackage.TaskID = uint(build.TaskID.Int64)
+		buildedPackage.TagName = getTagNameForBuild(build.ID)
+		buildedPackage.Pushed = false
+
+		ctx := dbgorm.Create(&buildedPackage)
+		if ctx.Error != nil {
+			err = ctx.Error
+			revel.ERROR.Printf("Error in create builded package: %s", err)
+		} else {
+			err = nil
 		}
 	}
 	return
@@ -188,21 +231,28 @@ func getTagNameForBuild(id uint) (name string) {
                              FROM tag_listing
                              WHERE build_id=%d`, id)
 
-	var tagID uint
-
-	row := koji.QueryRow(queryStr)
-	err := row.Scan(&tagID)
+	rows, err := koji.Query(queryStr)
 	if err != nil {
-		revel.ERROR.Printf("Error scan from query [%s]: %s", queryStr, err)
+		revel.ERROR.Printf("Error in query [%s]: %s", queryStr, err)
 		return
 	}
+	defer rows.Close()
 
-	queryStr = fmt.Sprintf(`SELECT name FROM tag WHERE id=%d`, tagID)
-	row = koji.QueryRow(queryStr)
-	err = row.Scan(&name)
-	if err != nil {
-		revel.ERROR.Printf("Error scan from query [%s]: %s", queryStr, err)
-		return
+	for rows.Next() {
+		var tagID uint
+		err = rows.Scan(&tagID)
+		if err != nil {
+			revel.ERROR.Printf("Error scan from query [%s]: %s", queryStr, err)
+			continue
+		}
+
+		queryStr = fmt.Sprintf(`SELECT name FROM tag WHERE id=%d`, tagID)
+		row := koji.QueryRow(queryStr)
+		err = row.Scan(&name)
+		if err != nil {
+			revel.ERROR.Printf("Error scan from query [%s]: %s", queryStr, err)
+			return
+		}
 	}
 
 	return
