@@ -42,4 +42,22 @@ func init() {
 		}
 		return (user.UserGroup == models.GroupAdmin) || (user.UserGroup == models.GroupPusher)
 	}
+
+	revel.TemplateFuncs["get_group_name"] = func(user models.User) string {
+		groupName := ""
+		switch user.UserGroup {
+		case models.GroupAdmin:
+			groupName = "Admin"
+		case models.GroupPusher:
+			groupName = "Pusher"
+		case models.GroupPackager:
+			groupName = "Packager"
+		default:
+			groupName = "Unknown"
+		}
+		return groupName
+	}
+	revel.TemplateFuncs["is_current_user"] = func(user models.User, currentUser *models.User) bool {
+		return user.ID == currentUser.ID
+	}
 }

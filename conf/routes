@@ -20,6 +20,10 @@ DELETE  /repos/:id                              Repos.Delete
 GET     /login                                  Login.Index
 POST    /login                                  Login.Login
 GET     /logout                                 Login.Logout
+GET     /users                                  Users.Index
+GET     /users/:id                              Users.Edit
+POST    /users/:id                              Users.Save
+GET     /users/:id/delete                       Users.Delete
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

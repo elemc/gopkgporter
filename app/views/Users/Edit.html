@@ -1,0 +1,83 @@
+{{set . "title" "Home"}}
+{{template "header.html" .}}
+
+
+{{$currentUser := .currentUser}}
+{{$userID := .user.ID}}
+{{$currentUserID := .currentUser.ID}}
+
+<header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
+  <div class="container">
+    <div class="row">
+        {{ if or (user_is_admin $currentUser) (is_current_user .user .currentUser) }}
+            <form action="/users/{{ .user.ID }}" method="POST">
+            <table width="100%">
+    			<caption>User {{ .user.UserName }}</caption>
+    			<tr>
+    			  <th>Name</th>
+                  <th>Value</th>
+    			</tr>
+                <tr>
+                    <td>ID</td>
+                    <td><input type="hidden" name="id" value="{{ .user.ID }}"/>{{ .user.ID }}</td>
+                </tr>
+                <tr>
+                    <td>Name</td>
+                    <td>
+                        {{ if user_is_admin $currentUser }}
+                            <input type="text" name="username" value="{{ .user.UserName }}" size="19"/>
+                        {{ else }}
+                            <input type="hidden" name="username" value="{{ .user.UserName }}"/>{{ .user.UserName }}
+                        {{ end }}
+                    </td>
+                </tr>
+                <tr>
+                    <td>Password</td>
+                    <td><input type="password" size="19" name="password"/></td>
+                </tr>
+                <tr>
+                    <td>e-mail</td>
+                    <td><input type="email" size="19" name="email" value="{{ .user.UserEMail }}"/></td>
+                </tr>
+                <tr>
+                    <td>Group</td>
+                    <td>
+                        {{ if user_is_admin $currentUser }}
+                        <select name="group">
+                            {{ if eq .user.UserGroup 0 }}
+                                <option selected value="0">Packager</option>
+                            {{ else }}
+                                <option value="0">Packager</option>
+                            {{ end }}
+                            {{ if eq .user.UserGroup 1 }}
+                                <option selected value="1">Pusher</option>
+                            {{ else }}
+                                <option value="1">Pusher</option>
+                            {{ end }}
+                            {{ if eq .user.UserGroup 100 }}
+                                <option selected value="100">Admin</option>
+                            {{ else }}
+                                <option value="100">Admin</option>
+                            {{ end }}
+                        </select>
+                        {{ else }}
+                            <input type="hidden" name="group" value="{{ .user.UserGroup }}"/>
+                            {{ get_group_name .user }}
+                        {{ end }}
+                    </td>
+                </tr>
+                <tr>
+                    <td><input type="submit" value="Save"/></td>
+                    <td></td>
+                </tr>
+    		  </table>
+          </form>
+        {{ else }}
+            <h1>You don't have permissions for view it page!</h1>
+        {{ end }}
+    </div>
+  </div>
+</header>
+
+
+{{template "footer.html" .}}

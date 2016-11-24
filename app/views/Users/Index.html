@@ -1,0 +1,44 @@
+{{set . "title" "Users"}}
+{{template "header.html" .}}
+
+
+{{$currentUser := .currentUser}}
+
+<header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
+  <div class="container">
+    <div class="row">
+        {{ if user_is_admin $currentUser }}
+            <table width="100%">
+    			<caption>Users</caption>
+    			<tr>
+    			  <th>Name</th>
+                  <th>Group</th>
+                  <th></th>
+    			</tr>
+    			{{ range $index, $user := .users }}
+    			<tr>
+                    <td><a href="/users/{{ $user.ID }}/">{{ $user.UserName }}</a></td>
+                    <td>{{ get_group_name $user }}</td>
+                    <td><a href="/users/{{ $user.ID }}/delete">Delete</a></td>
+    			</tr>
+    			{{ end }}
+                <tr>
+                    <td><hr/></td>
+                    <td><hr/></td>
+                    <td><hr/></td>
+                </tr>
+                <tr>
+                    <td><a href="/users/-1">Create new user</a></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+    		  </table>
+        {{ else }}
+            <h1>You don't have permissions for view it page!</h1>
+        {{ end }}
+    </div>
+  </div>
+</header>
+
+
+{{template "footer.html" .}}

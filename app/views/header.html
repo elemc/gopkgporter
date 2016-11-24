@@ -24,7 +24,11 @@
               <li id="buildsTab"><a href="/builds/">Builds</a></li>
               <li id="packagesTab"><a href="/packages/">Packages</a></li>
               <li id="reposTab"><a href="/repos/">Repositories</a></li>
-              <li id="adminTab"><a href="/admin/">Administration</a></li>
+              {{ if user_is_admin .currentUser }}
+                <li id="userTab"><a href="/users">Users</a></li>
+              {{ else if not (user_is_nil .currentUser)  }}
+                <li id="userTab"><a href="/users/{{ .currentUser.ID }}">User</a></li>
+              {{ end }}
               {{ if user_is_auth .session }}
               <li id="logoutTab"><a href="/logout">Logout: {{ auth_user_name .session }}</a></li>
               {{ else }}
