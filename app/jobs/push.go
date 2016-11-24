@@ -47,7 +47,7 @@ func (c PushPackages) Run() {
 		argList = append(argList, fmt.Sprintf("--branch %s", pkg.Branch))
 		argList = append(argList, fmt.Sprintf("--dist %s", pkg.Distributive))
 
-		cmd := exec.Command(script, argList...)
+		cmd := exec.Command(script, strings.Join(argList, " "))
 
 		revel.INFO.Printf("Command: %s", strings.Join(cmd.Args, " "))
 		data, err := cmd.CombinedOutput()
