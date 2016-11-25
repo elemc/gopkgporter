@@ -260,6 +260,6 @@ func getTagNameForBuild(id uint) (name string) {
 
 func init() {
 	revel.OnAppStart(func() {
-		jobs.Schedule("@every 10m", GetFromKoji{})
+		jobs.Schedule("@every 1m", GetFromKoji{})
 	})
 }
