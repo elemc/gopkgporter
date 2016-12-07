@@ -134,6 +134,10 @@ func createNewBuildPackage(build KojiBuild) (err error) {
 	buildedPackage := models.BuildedPackage{}
 	d := dbgorm.First(&buildedPackage, "build_id=?", build.ID)
 	if err = d.Error; err != nil {
+		tagName := getTagNameForBuild(build.ID)
+		if tagName == "" {
+			return fmt.Errorf("in build with id=%d tag name is empty, skip it", build.ID)
+		}
 		buildedPackage.BuildID = build.ID
 		buildedPackage.Owner = getOwner(build.OwnerID)
 		buildedPackage.BuildPackage = getPackage(build.PkgID, buildedPackage.Owner)
@@ -142,7 +146,7 @@ func createNewBuildPackage(build KojiBuild) (err error) {
 		buildedPackage.Epoch = build.Epoch.String
 		buildedPackage.CompletionTime = build.CompletionTime
 		buildedPackage.TaskID = uint(build.TaskID.Int64)
-		buildedPackage.TagName = getTagNameForBuild(build.ID)
+		buildedPackage.TagName = tagName
 		buildedPackage.Pushed = false
 
 		ctx := dbgorm.Create(&buildedPackage)
