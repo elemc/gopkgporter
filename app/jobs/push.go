@@ -15,10 +15,12 @@ import (
 	"github.com/revel/revel"
 )
 
+// PushPackages job
 type PushPackages struct {
-	jobs.Job
+	*jobs.Job
 }
 
+// Run functions is a main function for PushPackages job
 func (c PushPackages) Run() {
 	dbgorm, err := common.GetGORM()
 	if err != nil {

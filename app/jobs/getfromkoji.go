@@ -12,9 +12,11 @@ import (
 	"github.com/revel/modules/jobs/app/jobs"
 	"github.com/revel/revel"
 
+	// import for PostgreSQL
 	_ "github.com/lib/pq"
 )
 
+// KojiBuild struct for build table from koji db
 type KojiBuild struct {
 	ID             uint
 	PkgID          uint
@@ -28,8 +30,9 @@ type KojiBuild struct {
 	OwnerID        uint
 }
 
+// GetFromKoji job
 type GetFromKoji struct {
-	jobs.Job
+	*jobs.Job
 }
 
 var (
@@ -37,6 +40,7 @@ var (
 	koji   *sql.DB
 )
 
+// Run functions is a main function for all jobs
 func (c GetFromKoji) Run() {
 	err := getBuilds()
 	if err != nil {
