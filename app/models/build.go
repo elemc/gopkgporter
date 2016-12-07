@@ -1,8 +1,9 @@
 package models
 
 import (
-	"gopkgporter/app/common"
 	"time"
+
+	"github.com/elemc/gopkgporter/app/common"
 
 	"github.com/jinzhu/gorm"
 )

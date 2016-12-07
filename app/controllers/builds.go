@@ -2,8 +2,9 @@ package controllers
 
 import (
 	"fmt"
-	"gopkgporter/app/models"
 	"time"
+
+	"github.com/elemc/gopkgporter/app/models"
 
 	"github.com/revel/revel"
 )
@@ -84,6 +85,7 @@ func (c Builds) CancelBuild(id int) revel.Result {
 	return c.Redirect("/builds")
 }
 
+// Push function for push to pool selected build
 func (c Builds) Push(id uint, branch string) revel.Result {
 	if branch == "" {
 		branch = "updates"

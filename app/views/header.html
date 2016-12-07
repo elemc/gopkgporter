@@ -26,6 +26,7 @@
               <li id="reposTab"><a href="/repos/">Repositories</a></li>
               {{ if user_is_admin .currentUser }}
                 <li id="userTab"><a href="/users">Users</a></li>
+                <li id="pushTab"><a href="/pushes">Push pool</a></li>
               {{ else if not (user_is_nil .currentUser)  }}
                 <li id="userTab"><a href="/users/{{ .currentUser.ID }}">User</a></li>
               {{ end }}

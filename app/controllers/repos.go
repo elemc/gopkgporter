@@ -2,7 +2,8 @@ package controllers
 
 import (
 	"fmt"
-	"gopkgporter/app/models"
+
+	"github.com/elemc/gopkgporter/app/models"
 
 	"github.com/revel/revel"
 )
@@ -53,7 +54,7 @@ func (c Repos) Insert() revel.Result {
 
 	repoName := c.Params.Get("RepoName")
 	if repoName == "" {
-		return c.RenderError(fmt.Errorf("Missing parameter \"Repository name\" or it was empty.\n"))
+		return c.RenderError(fmt.Errorf("missing parameter \"Repository name\" or it was empty"))
 	}
 
 	repo := models.Repo{RepoName: repoName}
@@ -75,7 +76,7 @@ func (c Repos) Edit(id int) revel.Result {
 
 	repoName := c.Params.Get("RepoName")
 	if repoName == "" {
-		return c.RenderError(fmt.Errorf("Missing parameter \"Repository name\" or it was empty."))
+		return c.RenderError(fmt.Errorf("missing parameter \"Repository name\" or it was empty"))
 	}
 
 	var repo models.Repo

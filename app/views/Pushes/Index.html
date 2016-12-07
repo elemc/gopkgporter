@@ -1,0 +1,49 @@
+{{set . "title" "Builds to push"}}
+{{template "header.html" .}}
+
+{{ $currentUser := .currentUser }}
+
+<header class="jumbotron"><!-- style="background-color:#A9F16C"> -->
+  <div class="container">
+    <div class="row">
+        {{ if not (user_is_admin $currentUser) }}
+        <h1>You don't have permission for view this page</h1>
+        {{ else }}
+        <table width="100%">
+			<caption>Builds to push</caption>
+			<tr>
+			  <th>Build ID</th>
+			  <th>Version</th>
+              <th>Repository</th>
+              <th>Branch</th>
+              <th>Distributive</th>
+              <th>Edit</th>
+              <th>Delete</th>
+			</tr>
+			{{ range $index, $push := .pushes }}
+			<tr>
+                <form action="/pushes/{{ $push.ID }}" method="POST">
+                    <td>{{ $push.BuildID }}<input type="hidden" name="id" value="{{ $push.ID }}"/></td>
+                    <td><input type="text" size="20" name="Version" value="{{ $push.Version }}"/></td>
+                    <td><input type="text" size="20" name="Repository" value="{{ $push.Repository }}"/></td>
+                    <td><input type="text" size="20" name="Branch" value="{{ $push.Branch }}"/></td>
+                    <td><input type="text" size="20" name="Distributive" value="{{ $push.Distributive }}"/></td>
+                    <td><input type="submit" value="Edit"/></td>
+                </form>
+                <td>
+                    <form action="/pushes/{{ $push.ID }}/delete" method="POST">
+                        <input type="hidden" name="id" value="{{ $push.ID }}"/>
+                        <input type="submit" value="Delete"/>
+                    </form>
+                </td>
+			</tr>
+            {{ end }}
+		  </table>
+          {{ end }}
+    </div>
+
+  </div>
+</header>
+
+
+{{template "footer.html" .}}

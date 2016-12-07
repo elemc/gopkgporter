@@ -1,8 +1,7 @@
 package controllers
 
 import (
-	"gopkgporter/app/models"
-
+	"github.com/elemc/gopkgporter/app/models"
 	"github.com/revel/revel"
 )
 

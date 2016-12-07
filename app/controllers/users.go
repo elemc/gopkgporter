@@ -1,15 +1,16 @@
 package controllers
 
 import (
-	"gopkgporter/app/models"
-
+	"github.com/elemc/gopkgporter/app/models"
 	"github.com/revel/revel"
 )
 
+// Users controller for /users
 type Users struct {
 	*revel.Controller
 }
 
+// Index function for index /users
 func (c Users) Index() revel.Result {
 	currentUser := connected(c.RenderArgs, c.Session)
 	if currentUser == nil || currentUser.UserGroup < models.GroupAdmin {
@@ -25,6 +26,7 @@ func (c Users) Index() revel.Result {
 	return c.Render(users, currentUser)
 }
 
+// Edit function for edit user selected by id
 func (c Users) Edit(id uint) revel.Result {
 	currentUser := connected(c.RenderArgs, c.Session)
 	// if currentUser == nil || (currentUser.UserGroup < models.GroupAdmin && currentUser.ID != id) {
@@ -36,6 +38,7 @@ func (c Users) Edit(id uint) revel.Result {
 	return c.Render(user, currentUser)
 }
 
+// Save function for save edited user
 func (c Users) Save(id uint, username, password, email string, group int) revel.Result {
 	currentUser := connected(c.RenderArgs, c.Session)
 	if currentUser == nil {
@@ -71,6 +74,7 @@ func (c Users) Save(id uint, username, password, email string, group int) revel.
 	return c.Redirect("/users")
 }
 
+// Delete function for delete user with selected id
 func (c Users) Delete(id uint) revel.Result {
 	currentUser := connected(c.RenderArgs, c.Session)
 	if currentUser == nil || currentUser.UserGroup < models.GroupAdmin {

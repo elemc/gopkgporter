@@ -25,6 +25,10 @@ GET     /users                                  Users.Index
 GET     /users/:id                              Users.Edit
 POST    /users/:id                              Users.Save
 GET     /users/:id/delete                       Users.Delete
+GET     /pushes                                 Pushes.Index
+POST    /pushes/:id/delete                      Pushes.Delete
+POST    /pushes/:id                             Pushes.Edit
+DELETE  /pushes/:id                             Pushes.Delete
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

@@ -2,9 +2,9 @@ package controllers
 
 import (
 	"fmt"
-	"gopkgporter/app/models"
 	"strconv"
 
+	"github.com/elemc/gopkgporter/app/models"
 	"github.com/revel/revel"
 )
 

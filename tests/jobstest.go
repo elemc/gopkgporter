@@ -1,7 +1,7 @@
 package tests
 
 import (
-	"gopkgporter/app/jobs"
+	"github.com/elemc/gopkgporter/app/jobs"
 
 	"github.com/revel/revel/testing"
 )

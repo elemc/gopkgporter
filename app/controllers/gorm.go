@@ -1,9 +1,8 @@
 package controllers
 
 import (
-	"gopkgporter/app/common"
-	"gopkgporter/app/models"
-
+	"github.com/elemc/gopkgporter/app/common"
+	"github.com/elemc/gopkgporter/app/models"
 	"github.com/jinzhu/gorm"
 	"github.com/revel/revel"
 

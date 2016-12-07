@@ -2,13 +2,14 @@ package jobs
 
 import (
 	"fmt"
-	"gopkgporter/app/common"
-	"gopkgporter/app/models"
 	"io/ioutil"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"strings"
+
+	"github.com/elemc/gopkgporter/app/common"
+	"github.com/elemc/gopkgporter/app/models"
 
 	"github.com/revel/modules/jobs/app/jobs"
 	"github.com/revel/revel"

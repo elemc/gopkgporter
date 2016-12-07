@@ -1,16 +1,17 @@
 package controllers
 
 import (
-	"gopkgporter/app/routes"
-
+	"github.com/elemc/gopkgporter/app/routes"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
 )
 
+// Login controller /login
 type Login struct {
 	*revel.Controller
 }
 
+// Index function for index /login
 func (c Login) Index() revel.Result {
 	user := connected(c.RenderArgs, c.Session)
 	if user != nil {
@@ -20,6 +21,7 @@ func (c Login) Index() revel.Result {
 	return c.Render()
 }
 
+// Login function for login
 func (c Login) Login(username, password string, remember bool) revel.Result {
 	user := getUser(username)
 	if user != nil {
@@ -47,6 +49,7 @@ func (c Login) Login(username, password string, remember bool) revel.Result {
 	return c.Redirect(routes.App.Index())
 }
 
+// Logout function for /logout
 func (c Login) Logout() revel.Result {
 	for k := range c.Session {
 		delete(c.Session, k)

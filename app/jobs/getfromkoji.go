@@ -3,11 +3,11 @@ package jobs
 import (
 	"database/sql"
 	"fmt"
-	"gopkgporter/app/common"
-	"gopkgporter/app/models"
 	"log"
 	"time"
 
+	"github.com/elemc/gopkgporter/app/common"
+	"github.com/elemc/gopkgporter/app/models"
 	"github.com/jinzhu/gorm"
 	"github.com/revel/modules/jobs/app/jobs"
 	"github.com/revel/revel"

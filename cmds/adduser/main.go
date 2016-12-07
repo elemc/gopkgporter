@@ -1,9 +1,10 @@
 package main
 
 import (
-	"gopkgporter/app/models"
 	"log"
 	"os"
+
+	"github.com/elemc/gopkgporter/app/models"
 
 	"github.com/jinzhu/gorm"
 	"github.com/revel/revel"
