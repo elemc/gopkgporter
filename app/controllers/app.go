@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"time"
+
 	"github.com/elemc/gopkgporter/app/models"
 	"github.com/revel/revel"
 )
@@ -41,9 +43,38 @@ func connected(args map[string]interface{}, session revel.Session) *models.User 
 		return args["user"].(*models.User)
 	}
 	if username, ok := session["user"]; ok {
-		return getUser(username)
+		session := getSession(username)
+		if session == nil {
+			return nil
+		}
+		return getUserByID(session.SessionUserID)
 	}
 	return nil
+}
+
+func getSession(sessionID string) *models.Session {
+	var sessions []models.Session
+	ctx := dbgorm.Db.Find(&sessions, "session_id=?", sessionID)
+	if ctx.Error != nil {
+		revel.ERROR.Printf("Error in getSession: %s", ctx.Error)
+		return nil
+	}
+	if len(sessions) == 0 {
+		revel.WARN.Printf("Session with ID %s not found in database", sessionID)
+		return nil
+	}
+
+	session := sessions[0]
+	if session.Expiration.Unix() < time.Now().Unix() {
+		ctx = dbgorm.Db.Delete(session, session.ID)
+		if ctx.Error != nil {
+			revel.ERROR.Printf("Error in remove session: %s", ctx.Error)
+			return nil
+		}
+		return nil // session expires
+	}
+
+	return &session
 }
 
 func getUser(username string) *models.User {
@@ -55,6 +86,21 @@ func getUser(username string) *models.User {
 	}
 	if len(users) == 0 {
 		revel.WARN.Printf("User with username %s not found in database", username)
+		return nil
+	}
+
+	return &users[0]
+}
+
+func getUserByID(userID uint) *models.User {
+	var users []models.User
+	ctx := dbgorm.Db.Find(&users, userID)
+	if ctx.Error != nil {
+		revel.ERROR.Printf("Error in getUser: %s", ctx.Error)
+		return nil
+	}
+	if len(users) == 0 {
+		revel.WARN.Printf("User with user ID=%d not found in database", userID)
 		return nil
 	}
 

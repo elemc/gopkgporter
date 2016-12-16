@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"github.com/elemc/gopkgporter/app/models"
 	"github.com/elemc/gopkgporter/app/routes"
 	"github.com/revel/revel"
 	"golang.org/x/crypto/bcrypt"
@@ -33,7 +34,21 @@ func (c Login) Login(username, password string, remember bool) revel.Result {
 		}
 		err = bcrypt.CompareHashAndPassword(hash, []byte(password))
 		if err == nil {
-			c.Session["user"] = username
+			session := models.CreateSession()
+			session.SessionUser = user
+			session.SessionUserID = user.ID
+			ctx := dbgorm.Db.Create(session)
+			if ctx.Error != nil {
+				revel.ERROR.Printf("Error in create session: %s", ctx.Error)
+				return c.Redirect(routes.App.Index())
+			}
+			ctx = dbgorm.Db.Save(session)
+			if ctx.Error != nil {
+				revel.ERROR.Printf("Error in save session: %s", ctx.Error)
+				return c.Redirect(routes.App.Index())
+			}
+
+			c.Session["user"] = session.SessionID
 			if remember {
 				c.Session.SetDefaultExpiration()
 			} else {
@@ -51,6 +66,14 @@ func (c Login) Login(username, password string, remember bool) revel.Result {
 
 // Logout function for /logout
 func (c Login) Logout() revel.Result {
+	if sessionID, ok := c.Session["user"]; ok {
+		session := getSession(sessionID)
+		ctx := dbgorm.Db.Delete(session, "session_id=?", sessionID)
+		if ctx.Error != nil {
+			revel.ERROR.Printf("Error in delete session: %s", ctx.Error)
+			return c.Redirect(routes.App.Index())
+		}
+	}
 	for k := range c.Session {
 		delete(c.Session, k)
 	}

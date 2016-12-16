@@ -34,7 +34,7 @@ func InitDB() {
 
 	dbgorm.Db.AutoMigrate(&models.RepoType{}, &models.Repo{}, &models.User{},
 		&models.Owner{}, &models.Package{}, &models.BuildedPackage{},
-		&models.Log{}, &models.PackagesToPush{})
+		&models.Log{}, &models.PackagesToPush{}, &models.Session{})
 
 	initUsers()
 	initRepos()
