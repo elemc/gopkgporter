@@ -31,7 +31,7 @@
                 <li id="userTab"><a href="/users/{{ .currentUser.ID }}">User</a></li>
               {{ end }}
               {{ if user_is_auth .session }}
-              <li id="logoutTab"><a href="/logout">Logout: {{ .currentUser.UserName }}</a></li>
+              <li id="logoutTab"><a href="/logout">Logout: {{ auth_user_name .currentUser }}</a></li>
               {{ else }}
               <li id="loginTab"><a href="/login">Login</a></li>
               {{ end }}

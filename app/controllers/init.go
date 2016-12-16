@@ -20,12 +20,12 @@ func init() {
 		_, ok := s["user"]
 		return ok
 	}
-	// revel.TemplateFuncs["auth_user_name"] = func(s revel.Session) string {
-	// 	if username, ok := s["user"]; ok {
-	// 		return username
-	// 	}
-	// 	return ""
-	// }
+	revel.TemplateFuncs["auth_user_name"] = func(user *models.User) string {
+		if user != nil {
+			return user.UserName
+		}
+		return ""
+	}
 	revel.TemplateFuncs["user_is_nil"] = func(user *models.User) bool {
 		return user == nil
 	}
