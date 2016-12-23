@@ -19,7 +19,7 @@ type App struct {
 // Index function returns log list
 func (c App) Index() revel.Result {
 	var logs []models.Log
-	logsQuery := dbgorm.Db.Order("Timestamp DESC", true).Find(&logs).Limit(25)
+	logsQuery := dbgorm.Db.Order("Timestamp DESC", true).Limit(25).Find(&logs)
 	err := logsQuery.Error
 	if err != nil {
 		return c.RenderError(err)

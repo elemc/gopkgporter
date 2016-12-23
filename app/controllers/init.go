@@ -43,7 +43,7 @@ func init() {
 	}
 
 	revel.TemplateFuncs["get_group_name"] = func(user models.User) string {
-		groupName := ""
+		var groupName string
 		switch user.UserGroup {
 		case models.GroupAdmin:
 			groupName = "Admin"
